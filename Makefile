@@ -1,4 +1,3 @@
-intl_imports = ./node_modules/.bin/intl-imports.js
 transifex_utils = ./node_modules/.bin/transifex-utils.js
 i18n = ./src/i18n
 transifex_input = $(i18n)/transifex_input.json
@@ -6,9 +5,13 @@ transifex_input = $(i18n)/transifex_input.json
 # This directory must match .babelrc .
 transifex_temp = ./temp/babel-plugin-formatjs
 
-precommit:
-	npm run lint
-	npm audit
+build:
+	rm -rf ./dist
+	./node_modules/.bin/fedx-scripts babel src --out-dir dist --source-maps --ignore **/*.test.jsx,**/__mocks__,**/__snapshots__,**/setupTest.jsx --copy-files
+	@# --copy-files will bring in everything else that wasn't processed by babel. Remove what we don't want.
+	@rm -rf dist/**/*.test.jsx
+	@rm -rf dist/**/__snapshots__
+	@rm -rf dist/__mocks__
 
 requirements:
 	npm ci
@@ -29,16 +32,7 @@ detect_changed_source_translations:
 	# Checking for changed translations...
 	git diff --exit-code $(i18n)
 
-# Pulls translations using atlas.
-pull_translations:
-	mkdir src/i18n/messages
-	cd src/i18n/messages \
-	   && atlas pull $(ATLAS_OPTIONS) \
-	            translations/frontend-platform/src/i18n/messages:frontend-platform \
-	            translations/paragon/src/i18n/messages:paragon \
-	            translations/frontend-component-footer/src/i18n/messages:frontend-component-footer \
-	            translations/frontend-component-header/src/i18n/messages:frontend-component-header \
-	            translations/frontend-template-application/src/i18n/messages:frontend-template-application
-
-	$(intl_imports) frontend-platform paragon frontend-component-header frontend-component-footer frontend-template-application
-
+# This target is used by Travis.
+validate-no-uncommitted-package-lock-changes:
+	# Checking for package-lock.json changes...
+	git diff --exit-code package-lock.json

@@ -1,0 +1,207 @@
+stages:
+  - lint
+  - version_check
+  - test
+  - package
+  - publish
+
+variables:
+  NODE_VER: 20
+  GIT_DEPTH: 3
+
+tests:
+  stage: test
+  image: node:${NODE_VER}
+  parallel:
+    matrix:
+      - NPM_TESTS: i18n_extract
+      - NPM_TESTS: lint
+      - NPM_TESTS: test
+      - NPM_TESTS: build
+  before_script:
+    - echo "Setting up Node.js environment"
+    - npm ci
+  script:
+    - echo "Running tests with $NPM_TESTS"
+    - npm run $NPM_TESTS
+  coverage: '/^TOTAL:\s+\d+%$/'
+  allow_failure: true
+  only:
+    - merge_requests
+
+commit_messages:
+  stage: lint
+  image: node:${NODE_VER}
+  script:
+    - echo "Ensure full repository clone if shallow"
+    - git fetch --unshallow || echo "Repository is already fully cloned"
+    - git fetch origin --depth=${GIT_DEPTH}
+
+    - echo "Check if commitlint config file is missing and download if needed"
+    - |
+      if [[ ! -f commitlint.config.js ]] && [[ ! -f commitlint.config.cjs ]] && [[ ! -f commitlint.config.mjs ]]; then
+        echo "Downloading the default commitlint config from edx_lint"
+        wget --no-verbose -O commitlint.config.mjs https://raw.githubusercontent.com/openedx/edx-lint/HEAD/edx_lint/files/commitlint.config.js
+      fi
+
+    - echo "Install commitlint dependencies"
+    - npm install -g @commitlint/{cli,config-conventional}
+
+    - echo "Run commitlint for commit messages"
+    - npx commitlint --config commitlint.config.mjs --from=HEAD~${GIT_DEPTH} --to=HEAD
+  allow_failure: true
+  only:
+    - merge_requests
+
+stylelint:
+  stage: lint
+  image: node:${NODE_VER}
+  script:
+    - echo "Checking if stylelint is installed in the project"
+    - |
+      if grep -q '"stylelint":' package.json; then
+        echo "stylelint found. Running stylelint check...";
+        echo "Setting up Node.js environment"
+        npm ci
+        npm run stylelint || exit 1;
+      else
+        echo "stylelint is not installed. Skipping stylelint check.";
+        exit 0;
+      fi
+  allow_failure: true
+  only:
+    - merge_requests
+
+lockfile_version_check:
+  stage: version_check
+  image: node:${NODE_VER}
+  script:
+    - echo "Checking package-lock.json for lockfileVersion 3"
+    - |
+      LOCKFILE_VERSION=$(cat package-lock.json | grep '"lockfileVersion": 3,')
+      if [ -z "$LOCKFILE_VERSION" ]; then
+        echo "ERROR: Outdated package-lock file. Use NPM 9 to install dependencies."
+        exit 1
+      fi
+    - echo "Lockfile version is valid."
+  allow_failure: true
+  only:
+    - merge_requests
+
+lockfile_mismatch_check:
+  stage: version_check
+  image: node:${NODE_VER}
+  script:
+    - apt-get update && apt-get install -y jq
+    - echo "Checking for mismatches between package.json and package-lock.json"
+    - |
+      problems=$(npm ls --all --package-lock-only --json | jq '.problems[]?' -r)
+      if [[ -n "$problems" ]]; then
+        echo "$problems"
+        echo
+        echo "Mismatch between package.json and package-lock.json. Please regenerate package-lock.json with 'npm install'."
+        exit 1
+      fi
+    - echo "No mismatches found in package-lock.json."
+  allow_failure: true
+  only:
+    - merge_requests
+
+.npm-package:
+  image: node:${NODE_VER}
+  stage: package
+  artifacts:
+    paths:
+      - package.json
+      - package-lock.json
+      - dist/
+    expire_in: 1 hour
+  before_script:
+    - echo "$INIT_MESSAGE"
+    - npm ci
+
+build-dev-package:
+  extends: .npm-package
+  variables:
+    INIT_MESSAGE: "Building development package..."
+  only:
+    - main
+  except:
+    - tags
+  script:
+    - |
+      TIMESTAMP=$(date +%s)
+      DEV_VERSION="0.0.0-dev.${TIMESTAMP}"
+      echo "Setting version to: ${DEV_VERSION}"
+      npm version ${DEV_VERSION} --no-git-tag-version
+      npm run build
+
+build-release-package:
+  extends: .npm-package
+  variables:
+    INIT_MESSAGE: "Building release package..."
+  only:
+    - tags
+  script:
+    - |
+      if [[ ${CI_COMMIT_TAG} =~ ^v?([0-9]+\.[0-9]+\.[0-9]+.*)$ ]]; then
+        VERSION=${BASH_REMATCH[1]}
+      else
+        VERSION=${CI_COMMIT_TAG#v}
+      fi
+      echo "Setting version to: ${VERSION}"
+      npm version ${VERSION} --no-git-tag-version
+      npm run build
+
+publish-package:
+  image: node:${NODE_VER}
+  stage: publish
+  variables:
+    INIT_MESSAGE: "Publishing plugin package to registry..."
+  dependencies:
+    - build-dev-package
+    - build-release-package
+  only:
+    - main
+    - tags
+  before_script:
+    - echo "$INIT_MESSAGE"
+    - npm ci
+  script:
+    - |
+      echo "@rgg-plugins:registry=https://${CI_SERVER_HOST}/api/v4/projects/${CI_PROJECT_ID}/packages/npm/" > .npmrc
+      echo "//${CI_SERVER_HOST}/api/v4/projects/${CI_PROJECT_ID}/packages/npm/:_authToken=${CI_JOB_TOKEN}" >> .npmrc
+      cat .npmrc
+
+      echo "=== Checking for artifacts ==="
+      echo "Current directory: $(pwd)"
+      echo "Checking if dist/ exists:"
+      ls -la dist/ 2>&1 || echo "dist/ not found"
+      echo "Checking package.json version:"
+      cat package.json | grep '"version"' || echo "version not found in package.json"
+
+      VERSION=$(node -p "require('./package.json').version")
+      echo "Detected version: ${VERSION}"
+
+      if [[ "${VERSION}" =~ ^0\.0\.0-dev\. ]]; then
+        PUBLISH_TAG="dev"
+        echo "Using dev package with tag: ${PUBLISH_TAG}"
+      else
+        PUBLISH_TAG="latest"
+        echo "Using release package with tag: ${PUBLISH_TAG}"
+      fi
+
+      if [ ! -d "dist" ] || [ -z "$(ls -A dist)" ]; then
+        echo "ERROR: dist/ directory is empty or missing!"
+        exit 1
+      fi
+
+      echo "=== Package info ==="
+      echo "Version: ${VERSION}"
+      echo "Publishing with tag: ${PUBLISH_TAG}"
+      echo "Dist contents:"
+      ls -la dist/ || true
+
+      npm publish --tag ${PUBLISH_TAG}
+  environment:
+    name: production

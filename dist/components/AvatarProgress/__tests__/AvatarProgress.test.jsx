@@ -26,6 +26,16 @@ const defaultMockResponse = {
   error: null,
 };
 
+// Helper function to render component without opening popover
+const renderComponent = (mockData = {}) => {
+  useGammaProfileData.mockReturnValue({
+    ...defaultMockResponse,
+    ...mockData,
+  });
+
+  return render(<AvatarProgress />, { wrapper: createWrapper });
+};
+
 // Helper function to render component and open popover
 const renderAndOpenPopover = async (mockData = {}) => {
   useGammaProfileData.mockReturnValue({
@@ -34,7 +44,7 @@ const renderAndOpenPopover = async (mockData = {}) => {
   });
 
   const result = render(<AvatarProgress />, { wrapper: createWrapper });
-  await userEvent.click(screen.getByLabelText('Close progress widget'));
+  await userEvent.click(screen.getByLabelText('Toggle progress widget'));
   return result;
 };
 
@@ -49,6 +59,12 @@ const getPopover = async (baseElement) => {
 describe('AvatarProgress', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    document.cookie.split(';').forEach((cookie) => {
+      const name = cookie.split('=')[0].trim();
+      if (name) {
+        document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
+      }
+    });
   });
 
   describe('Loading state', () => {
@@ -157,6 +173,144 @@ describe('AvatarProgress', () => {
       });
 
       expect(screen.getByText('210/200')).toBeInTheDocument();
+    });
+  });
+
+  describe('Notification dot', () => {
+    it('should NOT show notification dot on initial data load', () => {
+      renderComponent({ data: mockAvatarProgress });
+
+      expect(screen.queryByTestId('notification-dot')).not.toBeInTheDocument();
+    });
+
+    it('should NOT show notification dot when data is loading', () => {
+      renderComponent({ isLoading: true });
+
+      expect(screen.queryByTestId('notification-dot')).not.toBeInTheDocument();
+    });
+
+    it('should NOT show notification dot when there is an error', () => {
+      renderComponent({
+        isError: true,
+        error: { message: 'Some error' },
+      });
+
+      expect(screen.queryByTestId('notification-dot')).not.toBeInTheDocument();
+    });
+
+    it('should NOT show notification dot when data is null', () => {
+      renderComponent({ data: null });
+
+      expect(screen.queryByTestId('notification-dot')).not.toBeInTheDocument();
+    });
+
+    it('should show notification dot when current_points changes', () => {
+      const { rerender } = renderComponent({ data: mockAvatarProgress });
+
+      useGammaProfileData.mockReturnValue({
+        ...defaultMockResponse,
+        data: {
+          ...mockAvatarProgress,
+          current_points: mockAvatarProgress.current_points + 10,
+        },
+      });
+
+      rerender(<AvatarProgress />);
+
+      expect(screen.getByTestId('notification-dot')).toBeInTheDocument();
+    });
+
+    it('should show notification dot when current_avatar stage changes', () => {
+      const { rerender } = renderComponent({ data: mockAvatarProgress });
+
+      useGammaProfileData.mockReturnValue({
+        ...defaultMockResponse,
+        data: {
+          ...mockAvatarProgress,
+          current_avatar: {
+            ...mockAvatarProgress.current_avatar,
+            stage: mockAvatarProgress.current_avatar.stage + 1,
+          },
+        },
+      });
+
+      rerender(<AvatarProgress />);
+
+      expect(screen.getByTestId('notification-dot')).toBeInTheDocument();
+    });
+
+    it('should NOT show notification dot when data values remain the same', () => {
+      const { rerender } = renderComponent({ data: mockAvatarProgress });
+
+      useGammaProfileData.mockReturnValue({
+        ...defaultMockResponse,
+        data: { ...mockAvatarProgress },
+      });
+
+      rerender(<AvatarProgress />);
+
+      expect(screen.queryByTestId('notification-dot')).not.toBeInTheDocument();
+    });
+
+    it('should hide notification dot after popover is opened and closed', async () => {
+      const { rerender } = renderComponent({ data: mockAvatarProgress });
+
+      useGammaProfileData.mockReturnValue({
+        ...defaultMockResponse,
+        data: {
+          ...mockAvatarProgress,
+          current_points: mockAvatarProgress.current_points + 10,
+        },
+      });
+
+      rerender(<AvatarProgress />);
+
+      expect(screen.getByTestId('notification-dot')).toBeInTheDocument();
+
+      // Open the popover
+      await userEvent.click(screen.getByLabelText('Toggle progress widget'));
+
+      // Close the popover
+      await userEvent.click(screen.getByLabelText('Toggle progress widget'));
+
+      await waitFor(() => {
+        expect(screen.queryByTestId('notification-dot')).not.toBeInTheDocument();
+      });
+    });
+
+    it('should show notification dot again if data changes after popover was closed', async () => {
+      const { rerender } = renderComponent({ data: mockAvatarProgress });
+
+      // First data change
+      const updatedData = {
+        ...mockAvatarProgress,
+        current_points: mockAvatarProgress.current_points + 10,
+      };
+      useGammaProfileData.mockReturnValue({
+        ...defaultMockResponse,
+        data: updatedData,
+      });
+      rerender(<AvatarProgress />);
+
+      // Open and close popover to acknowledge
+      await userEvent.click(screen.getByLabelText('Toggle progress widget'));
+      await userEvent.click(screen.getByLabelText('Toggle progress widget'));
+
+      await waitFor(() => {
+        expect(screen.queryByTestId('notification-dot')).not.toBeInTheDocument();
+      });
+
+      // Second data change
+      useGammaProfileData.mockReturnValue({
+        ...defaultMockResponse,
+        data: {
+          ...updatedData,
+          current_points: updatedData.current_points + 5,
+        },
+      });
+      rerender(<AvatarProgress />);
+
+      expect(screen.getByTestId('notification-dot')).toBeInTheDocument();
     });
   });
 });

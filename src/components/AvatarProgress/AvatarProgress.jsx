@@ -1,3 +1,4 @@
+import { useState, useRef, useEffect } from 'react';
 import { getConfig } from '@edx/frontend-platform';
 import { useIntl } from '@edx/frontend-platform/i18n';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
@@ -16,6 +17,12 @@ import {
 } from '@openedx/paragon/icons';
 
 import { useGammaProfileData } from '../../data/hooks';
+import {
+  getStoredLastSeen,
+  saveLastSeen,
+  createProgressSnapshot,
+  hasProgressChanged,
+} from './utils';
 import messages from './messages';
 
 import './index.scss';
@@ -30,6 +37,10 @@ const AvatarProgress = () => {
     error,
   } = useGammaProfileData(username);
 
+  const [showPopover, setShowPopover] = useState(false);
+  const [hasNewActivity, setHasNewActivity] = useState(false);
+  const lastSeenDataRef = useRef(getStoredLastSeen(username));
+
   const {
     status,
     current_points: currentPoints,
@@ -37,6 +48,37 @@ const AvatarProgress = () => {
     required_points: requiredPoints,
     current_avatar: currentAvatar,
   } = data ?? {};
+
+  useEffect(() => {
+    if (!data || isLoading || isError) {
+      return;
+    }
+
+    const currentSnapshot = createProgressSnapshot(data);
+
+    if (!lastSeenDataRef.current) {
+      lastSeenDataRef.current = currentSnapshot;
+      saveLastSeen(username, currentSnapshot);
+      return;
+    }
+
+    if (hasProgressChanged(lastSeenDataRef.current, currentSnapshot)) {
+      setHasNewActivity(true);
+    }
+  }, [data, isLoading, isError]);
+
+  const handlePopoverToggle = (nextShow) => {
+    setShowPopover(nextShow);
+
+    if (!nextShow) {
+      if (data && !isLoading && !isError) {
+        const snapshot = createProgressSnapshot(data);
+        lastSeenDataRef.current = snapshot;
+        saveLastSeen(username, snapshot);
+      }
+      setHasNewActivity(false);
+    }
+  };
 
   const currentProgressCap = requiredPoints || maxRequiredPoints;
   const currentProgressPercentage = (currentPoints / currentProgressCap) * 100;
@@ -75,6 +117,9 @@ const AvatarProgress = () => {
       <OverlayTrigger
         trigger="click"
         placement="bottom"
+        show={showPopover}
+        onToggle={handlePopoverToggle}
+        rootClose
         overlay={(
           <Popover
             id="avatar-progress-popover"
@@ -98,7 +143,7 @@ const AvatarProgress = () => {
                   <Avatar
                     size="xl"
                     src={currentAvatar?.image}
-                    alt="Your badge avatar"
+                    alt={intl.formatMessage(messages['rgg.avatar.progress.avatar.alt'])}
                     className="d-block mx-auto rounded-0 mt-2"
                   />
                   <ProgressBar
@@ -120,12 +165,19 @@ const AvatarProgress = () => {
           </Popover>
         )}
       >
-        <IconButton
-          src={EmojiEventsIcon}
-          alt="Close progress widget"
-          onClick={() => {}}
-          variant="primary"
-        />
+        <div className="rgg-avatar-progress-icon-wrapper position-relative d-inline-flex">
+          <IconButton
+            src={EmojiEventsIcon}
+            alt={intl.formatMessage(messages['rgg.avatar.progress.toggle.alt'])}
+            onClick={() => {}}
+          />
+          {hasNewActivity && (
+            <span
+              className="rgg-avatar-progress-notification-dot bg-danger-500 rounded-circle p-1 position-absolute"
+              data-testid="notification-dot"
+            />
+          )}
+        </div>
       </OverlayTrigger>
     </div>
   );

@@ -1,3 +1,15 @@
+.rgg-avatar-progress-widget {
+  .rgg-avatar-progress-icon-wrapper {
+    line-height: 0;
+  }
+
+  .rgg-avatar-progress-notification-dot {
+    top: .3rem;
+    right: .55rem;
+    pointer-events: none;
+  }
+}
+
 .rgg-avatar-progress-widget-popover {
   width: 21.4375rem;
 

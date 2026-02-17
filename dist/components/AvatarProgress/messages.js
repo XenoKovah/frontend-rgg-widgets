@@ -45,6 +45,16 @@ const messages = (0, _i18n.defineMessages)({
     id: 'rgg.avatar.progress.popover.level.text',
     defaultMessage: 'Level {level}',
     description: 'Text label inside the progress popover showing the current avatar level.'
+  },
+  'rgg.avatar.progress.toggle.alt': {
+    id: 'rgg.avatar.progress.toggle.alt',
+    defaultMessage: 'Toggle progress widget',
+    description: 'Alt text for the icon button that opens/closes the avatar progress popover.'
+  },
+  'rgg.avatar.progress.avatar.alt': {
+    id: 'rgg.avatar.progress.avatar.alt',
+    defaultMessage: 'Your badge avatar',
+    description: 'Alt text for the user\'s current badge avatar image.'
   }
 });
 var _default = exports.default = messages;

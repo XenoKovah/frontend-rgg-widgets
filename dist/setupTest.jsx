@@ -15,6 +15,11 @@ jest.mock('@edx/frontend-platform/auth', () => ({
   getAuthenticatedUser: jest.fn(() => ({ username: 'openedx' })),
 }));
 
+jest.mock('@edx/frontend-platform/logging', () => ({
+  logError: jest.fn(),
+  logInfo: jest.fn(),
+}));
+
 export const createTestQueryClient = () => new QueryClient({
   defaultOptions: {
     queries: {

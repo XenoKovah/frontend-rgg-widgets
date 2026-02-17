@@ -6,8 +6,8 @@ Object.defineProperty(exports, "__esModule", {
 exports.LearningHeaderUserMenuItems = exports.HeaderUserMenuItems = void 0;
 var _frontendPlatform = require("@edx/frontend-platform");
 var _auth = require("@edx/frontend-platform/auth");
-var _messages = _interopRequireDefault(require("./messages"));
 var _i18n = require("@edx/frontend-platform/i18n");
+var _messages = _interopRequireDefault(require("./messages"));
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 const HeaderUserMenuItems = widget => {
   const intl = (0, _i18n.useIntl)();
@@ -30,6 +30,8 @@ const HeaderUserMenuItems = widget => {
       content: intl.formatMessage(_messages.default['rgg.avatar.header.user.dropdown.gamification-settings.link'])
     });
   }
+
+  // eslint-disable-next-line no-param-reassign
   widget.content.menu = [{
     items
   }, ...widget.RenderWidget.props.menu];
@@ -54,6 +56,8 @@ const LearningHeaderUserMenuItems = widget => {
       content: intl.formatMessage(_messages.default['rgg.avatar.header.user.dropdown.gamification-settings.link'])
     });
   }
+
+  // eslint-disable-next-line no-param-reassign
   widget.content.items = [...items, ...widget.RenderWidget.props.items];
   return widget;
 };

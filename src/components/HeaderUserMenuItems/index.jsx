@@ -1,8 +1,8 @@
 import { getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
+import { useIntl } from '@edx/frontend-platform/i18n';
 
 import messages from './messages';
-import { useIntl } from '@edx/frontend-platform/i18n';
 
 export const HeaderUserMenuItems = (widget) => {
   const intl = useIntl();
@@ -29,6 +29,7 @@ export const HeaderUserMenuItems = (widget) => {
     });
   }
 
+  // eslint-disable-next-line no-param-reassign
   widget.content.menu = [
     { items },
     ...widget.RenderWidget.props.menu,
@@ -57,6 +58,7 @@ export const LearningHeaderUserMenuItems = (widget) => {
     });
   }
 
+  // eslint-disable-next-line no-param-reassign
   widget.content.items = [
     ...items,
     ...widget.RenderWidget.props.items,

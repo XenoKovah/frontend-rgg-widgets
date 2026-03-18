@@ -42,19 +42,26 @@ export const LearningHeaderUserMenuItems = (widget) => {
   const intl = useIntl();
   const { administrator } = getAuthenticatedUser();
 
+  // MFE Learning currently supports two header implementations:
+  // - `content` → used by the Header component
+  // - `message` → used by the default LearningHeader
+  // Both fields are required for compatibility.
   const items = [{
     href: `${getConfig().LMS_BASE_URL}/gamma_dashboard/dashboard/`,
     content: intl.formatMessage(messages['rgg.avatar.header.user.dropdown.performance.link']),
+    message: intl.formatMessage(messages['rgg.avatar.header.user.dropdown.performance.link']),
   },
   {
     href: `${getConfig().LMS_BASE_URL}/gamma_dashboard/leaderboard/`,
     content: intl.formatMessage(messages['rgg.avatar.header.user.dropdown.leaderboard.link']),
+    message: intl.formatMessage(messages['rgg.avatar.header.user.dropdown.leaderboard.link']),
   }];
 
   if (administrator) {
     items.push({
       href: `${getConfig().GAMMA_SETTINGS_URL}`,
       content: intl.formatMessage(messages['rgg.avatar.header.user.dropdown.gamification-settings.link']),
+      message: intl.formatMessage(messages['rgg.avatar.header.user.dropdown.gamification-settings.link']),
     });
   }
 

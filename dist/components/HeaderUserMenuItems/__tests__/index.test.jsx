@@ -10,6 +10,7 @@ import { HeaderUserMenuItems, LearningHeaderUserMenuItems } from '..';
 
 const wrapper = createTestWrapper(messages);
 
+// eslint-disable-next-line react/prop-types
 const WidgetMutatorRunner = ({ mutate, widget }) => {
   const updated = mutate(widget);
   // Only expose the bits we care about in assertions.
@@ -132,5 +133,3 @@ describe('LearningHeaderUserMenuItems', () => {
     ]);
   });
 });
-
-

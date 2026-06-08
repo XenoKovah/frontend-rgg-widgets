@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.useGammaProfileData = exports.retryFn = void 0;
+exports.useUserBadges = exports.useGammaProfileData = exports.retryFn = void 0;
 var _reactQuery = require("@tanstack/react-query");
 var _api = require("./api");
 const retryFn = (failureCount, error) => {
@@ -20,4 +20,13 @@ const useGammaProfileData = username => (0, _reactQuery.useQuery)({
   retry: retryFn
 });
 exports.useGammaProfileData = useGammaProfileData;
+const useUserBadges = username => (0, _reactQuery.useQuery)({
+  // Key by username: unlike the current-user profile data, this is fetched for
+  // whichever profile is being viewed, so the cache must not bleed across users.
+  queryKey: ['userBadges', username],
+  queryFn: () => (0, _api.fetchUserBadges)(username),
+  enabled: Boolean(username),
+  retry: retryFn
+});
+exports.useUserBadges = useUserBadges;
 //# sourceMappingURL=hooks.js.map

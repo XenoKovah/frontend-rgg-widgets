@@ -1,7 +1,8 @@
 import { useIntl } from '@edx/frontend-platform/i18n';
-import { Image } from '@openedx/paragon';
+import { Hyperlink, Image } from '@openedx/paragon';
 
 import { useUserBadges } from '../../data/hooks';
+import { getBadgeLeaderboardUrl } from '../../data/urls';
 import messages from './messages';
 
 import './index.scss';
@@ -44,26 +45,31 @@ const ProfileBadges = () => {
         {badges.map((badge) => (
           <li
             key={badge.title}
-            className="rgg-profile-badge d-flex align-items-start mb-3"
+            className="rgg-profile-badge mb-3"
             data-testid="rgg-profile-badge"
           >
-            {badge.image && (
-              <Image
-                className="rgg-profile-badge-image flex-shrink-0 mr-3"
-                src={badge.image}
-                alt={badge.title}
-              />
-            )}
-            <div className="rgg-profile-badge-info">
-              <div className="rgg-profile-badge-title font-weight-bold">
-                {badge.title}
-              </div>
-              {badge.description && (
-                <div className="rgg-profile-badge-description small text-gray-600">
-                  {badge.description}
-                </div>
+            <Hyperlink
+              destination={getBadgeLeaderboardUrl(badge.slug)}
+              className="rgg-profile-badge-link d-flex align-items-start text-reset text-decoration-none"
+            >
+              {badge.image && (
+                <Image
+                  className="rgg-profile-badge-image flex-shrink-0 mr-3"
+                  src={badge.image}
+                  alt={badge.title}
+                />
               )}
-            </div>
+              <div className="rgg-profile-badge-info">
+                <div className="rgg-profile-badge-title font-weight-bold">
+                  {badge.title}
+                </div>
+                {badge.description && (
+                  <div className="rgg-profile-badge-description small text-gray-600">
+                    {badge.description}
+                  </div>
+                )}
+              </div>
+            </Hyperlink>
           </li>
         ))}
       </ul>

@@ -4,6 +4,34 @@ import { useIntl } from '@edx/frontend-platform/i18n';
 
 import messages from './messages';
 
+// Relabel a few stock Open edX header user-menu items (contributed by the platform
+// header, not by RGG) to course-specific wording. Keyed by the platform's English
+// label; any item whose label isn't listed is passed through unchanged.
+const PLATFORM_MENU_RENAMES = {
+  Dashboard: 'Class Dashboard',
+  Profile: 'Public Profile',
+  Account: 'Account Settings',
+};
+
+// Return a copy of a menu item with its label(s) renamed per PLATFORM_MENU_RENAMES,
+// or the original item if nothing matches. Handles both `content` (Header component)
+// and `message` (default LearningHeader).
+const relabelMenuItem = (item) => {
+  if (!item || typeof item !== 'object') {
+    return item;
+  }
+
+  let updated = item;
+  ['content', 'message'].forEach((key) => {
+    const rename = typeof item[key] === 'string' ? PLATFORM_MENU_RENAMES[item[key]] : undefined;
+    if (rename) {
+      updated = { ...updated, [key]: rename };
+    }
+  });
+
+  return updated;
+};
+
 export const HeaderUserMenuItems = (widget) => {
   const intl = useIntl();
   const { administrator } = getAuthenticatedUser();
@@ -29,10 +57,16 @@ export const HeaderUserMenuItems = (widget) => {
     });
   }
 
+  const platformMenu = (widget.RenderWidget.props.menu || []).map((group) => (
+    group && Array.isArray(group.items)
+      ? { ...group, items: group.items.map(relabelMenuItem) }
+      : group
+  ));
+
   // eslint-disable-next-line no-param-reassign
   widget.content.menu = [
     { items },
-    ...widget.RenderWidget.props.menu,
+    ...platformMenu,
   ];
 
   return widget;
@@ -68,7 +102,7 @@ export const LearningHeaderUserMenuItems = (widget) => {
   // eslint-disable-next-line no-param-reassign
   widget.content.items = [
     ...items,
-    ...widget.RenderWidget.props.items,
+    ...(widget.RenderWidget.props.items || []).map(relabelMenuItem),
   ];
 
   return widget;

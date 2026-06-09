@@ -87,6 +87,31 @@ describe('HeaderUserMenuItems', () => {
       },
     ]);
   });
+
+  it('relabels stock platform items (Dashboard/Profile/Account) in the legacy header menu', () => {
+    const widget = {
+      content: { menu: [] },
+      RenderWidget: {
+        props: {
+          menu: [{
+            items: [
+              { type: 'item', href: '/dashboard', content: 'Dashboard' },
+              { type: 'item', href: '/u/openedx', content: 'Profile' },
+              { type: 'item', href: '/account', content: 'Account' },
+              { type: 'item', href: '/logout', content: 'Sign Out' },
+            ],
+          }],
+        },
+      },
+    };
+
+    render(<WidgetMutatorRunner mutate={HeaderUserMenuItems} widget={widget} />, { wrapper });
+
+    const menu = JSON.parse(screen.getByTestId('menu').textContent);
+    expect(menu[1].items.map((i) => i.content)).toEqual([
+      'Class Dashboard', 'Public Profile', 'Account Settings', 'Sign Out',
+    ]);
+  });
 });
 
 describe('LearningHeaderUserMenuItems', () => {
@@ -130,6 +155,33 @@ describe('LearningHeaderUserMenuItems', () => {
       { href: 'https://example.com/gamma_dashboard/dashboard/', content: 'Your Badges', message: 'Your Badges' },
       { href: 'https://example.com/gamma_dashboard/leaderboard/', content: 'Leaderboard', message: 'Leaderboard' },
       { href: 'https://example.com/gamma_settings/', content: 'Gamification Settings', message: 'Gamification Settings' },
+    ]);
+  });
+
+  it('relabels stock platform items (Dashboard/Profile/Account) in the learning header items', () => {
+    const widget = {
+      content: { items: [] },
+      RenderWidget: {
+        props: {
+          items: [
+            { href: '/dashboard', content: 'Dashboard', message: 'Dashboard' },
+            { href: '/u/openedx', content: 'Profile', message: 'Profile' },
+            { href: '/account', content: 'Account', message: 'Account' },
+            { href: '/logout', content: 'Sign Out', message: 'Sign Out' },
+          ],
+        },
+      },
+    };
+
+    render(<WidgetMutatorRunner mutate={LearningHeaderUserMenuItems} widget={widget} />, { wrapper });
+
+    const items = JSON.parse(screen.getByTestId('items').textContent);
+    // The first two are the prepended RGG items; the platform items follow and are relabeled.
+    expect(items.slice(2).map((i) => i.content)).toEqual([
+      'Class Dashboard', 'Public Profile', 'Account Settings', 'Sign Out',
+    ]);
+    expect(items.slice(2).map((i) => i.message)).toEqual([
+      'Class Dashboard', 'Public Profile', 'Account Settings', 'Sign Out',
     ]);
   });
 });

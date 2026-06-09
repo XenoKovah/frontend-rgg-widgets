@@ -9,6 +9,38 @@ var _auth = require("@edx/frontend-platform/auth");
 var _i18n = require("@edx/frontend-platform/i18n");
 var _messages = _interopRequireDefault(require("./messages"));
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == typeof i ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != typeof i) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+// Relabel a few stock Open edX header user-menu items (contributed by the platform
+// header, not by RGG) to course-specific wording. Keyed by the platform's English
+// label; any item whose label isn't listed is passed through unchanged.
+const PLATFORM_MENU_RENAMES = {
+  Dashboard: 'Class Dashboard',
+  Profile: 'Public Profile',
+  Account: 'Account Settings'
+};
+
+// Return a copy of a menu item with its label(s) renamed per PLATFORM_MENU_RENAMES,
+// or the original item if nothing matches. Handles both `content` (Header component)
+// and `message` (default LearningHeader).
+const relabelMenuItem = item => {
+  if (!item || typeof item !== 'object') {
+    return item;
+  }
+  let updated = item;
+  ['content', 'message'].forEach(key => {
+    const rename = typeof item[key] === 'string' ? PLATFORM_MENU_RENAMES[item[key]] : undefined;
+    if (rename) {
+      updated = _objectSpread(_objectSpread({}, updated), {}, {
+        [key]: rename
+      });
+    }
+  });
+  return updated;
+};
 const HeaderUserMenuItems = widget => {
   const intl = (0, _i18n.useIntl)();
   const {
@@ -30,11 +62,14 @@ const HeaderUserMenuItems = widget => {
       content: intl.formatMessage(_messages.default['rgg.avatar.header.user.dropdown.gamification-settings.link'])
     });
   }
+  const platformMenu = (widget.RenderWidget.props.menu || []).map(group => group && Array.isArray(group.items) ? _objectSpread(_objectSpread({}, group), {}, {
+    items: group.items.map(relabelMenuItem)
+  }) : group);
 
   // eslint-disable-next-line no-param-reassign
   widget.content.menu = [{
     items
-  }, ...widget.RenderWidget.props.menu];
+  }, ...platformMenu];
   return widget;
 };
 exports.HeaderUserMenuItems = HeaderUserMenuItems;
@@ -66,7 +101,7 @@ const LearningHeaderUserMenuItems = widget => {
   }
 
   // eslint-disable-next-line no-param-reassign
-  widget.content.items = [...items, ...widget.RenderWidget.props.items];
+  widget.content.items = [...items, ...(widget.RenderWidget.props.items || []).map(relabelMenuItem)];
   return widget;
 };
 exports.LearningHeaderUserMenuItems = LearningHeaderUserMenuItems;

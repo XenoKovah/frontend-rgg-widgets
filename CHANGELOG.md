@@ -8,6 +8,7 @@
 
 ## Changed
 - Rename the "Performance" item in the user dropdown menu to "Your Badges" (HeaderUserMenuItems + LearningHeaderUserMenuItems); the i18n id and the link target (the Performance dashboard) are unchanged.
+- Relabel the stock platform items in the user dropdown menu: "Dashboard" → "Class Dashboard", "Profile" → "Public Profile", "Account" → "Account Settings". Applied to the items the platform header contributes (matched by their English label) as the RGG widget merges them in.
 
 ## Fixed
 - Correct the LearningHeaderUserMenuItems tests to assert the `message` field added in [OST-68] (they were failing on the base branch)

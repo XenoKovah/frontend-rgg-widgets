@@ -7,6 +7,7 @@ exports.default = void 0;
 var _i18n = require("@edx/frontend-platform/i18n");
 var _paragon = require("@openedx/paragon");
 var _hooks = require("../../data/hooks");
+var _urls = require("../../data/urls");
 var _messages = _interopRequireDefault(require("./messages"));
 require("./index.scss");
 var _jsxRuntime = require("react/jsx-runtime");
@@ -48,23 +49,27 @@ const ProfileBadges = () => {
       children: intl.formatMessage(_messages.default['rgg.profile.badges.heading'])
     }), /*#__PURE__*/(0, _jsxRuntime.jsx)("ul", {
       className: "list-unstyled m-0",
-      children: badges.map(badge => /*#__PURE__*/(0, _jsxRuntime.jsxs)("li", {
-        className: "rgg-profile-badge d-flex align-items-start mb-3",
+      children: badges.map(badge => /*#__PURE__*/(0, _jsxRuntime.jsx)("li", {
+        className: "rgg-profile-badge mb-3",
         "data-testid": "rgg-profile-badge",
-        children: [badge.image && /*#__PURE__*/(0, _jsxRuntime.jsx)(_paragon.Image, {
-          className: "rgg-profile-badge-image flex-shrink-0 mr-3",
-          src: badge.image,
-          alt: badge.title
-        }), /*#__PURE__*/(0, _jsxRuntime.jsxs)("div", {
-          className: "rgg-profile-badge-info",
-          children: [/*#__PURE__*/(0, _jsxRuntime.jsx)("div", {
-            className: "rgg-profile-badge-title font-weight-bold",
-            children: badge.title
-          }), badge.description && /*#__PURE__*/(0, _jsxRuntime.jsx)("div", {
-            className: "rgg-profile-badge-description small text-gray-600",
-            children: badge.description
+        children: /*#__PURE__*/(0, _jsxRuntime.jsxs)(_paragon.Hyperlink, {
+          destination: (0, _urls.getBadgeLeaderboardUrl)(badge.slug),
+          className: "rgg-profile-badge-link d-flex align-items-start text-reset text-decoration-none",
+          children: [badge.image && /*#__PURE__*/(0, _jsxRuntime.jsx)(_paragon.Image, {
+            className: "rgg-profile-badge-image flex-shrink-0 mr-3",
+            src: badge.image,
+            alt: badge.title
+          }), /*#__PURE__*/(0, _jsxRuntime.jsxs)("div", {
+            className: "rgg-profile-badge-info",
+            children: [/*#__PURE__*/(0, _jsxRuntime.jsx)("div", {
+              className: "rgg-profile-badge-title font-weight-bold",
+              children: badge.title
+            }), badge.description && /*#__PURE__*/(0, _jsxRuntime.jsx)("div", {
+              className: "rgg-profile-badge-description small text-gray-600",
+              children: badge.description
+            })]
           })]
-        })]
+        })
       }, badge.title))
     })]
   });

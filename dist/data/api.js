@@ -26,7 +26,7 @@ const fetchGammaProfileData = async username => {
  *
  * @async
  * @param {string} username - The username of the profile being viewed.
- * @returns {Promise<Array<{title: string, description: string, image: string}>>}
+ * @returns {Promise<Array<{slug: string, title: string, description: string, image: string}>>}
  */
 exports.fetchGammaProfileData = fetchGammaProfileData;
 const fetchUserBadges = async username => {

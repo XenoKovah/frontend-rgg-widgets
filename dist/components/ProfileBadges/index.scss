@@ -1,8 +1,14 @@
 .rgg-profile-badges {
   .rgg-profile-badge-image {
-    width: 3rem;
-    height: 3rem;
+    width: 6rem;
+    height: 6rem;
     object-fit: contain;
+  }
+
+  // The icon + name link to the per-badge leaderboard; the link inherits surrounding
+  // text styling (text-reset), so underline the name on hover to signal it is clickable.
+  .rgg-profile-badge-link:hover .rgg-profile-badge-title {
+    text-decoration: underline;
   }
 
   .rgg-profile-badge-description {

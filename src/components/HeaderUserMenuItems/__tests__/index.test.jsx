@@ -32,7 +32,7 @@ describe('HeaderUserMenuItems', () => {
     getAuthenticatedUser.mockReturnValue({ username: 'openedx', administrator: false });
   });
 
-  it('prepends Performance + Leaderboard items to legacy header menu', () => {
+  it('prepends Your Badges + Leaderboard items to legacy header menu', () => {
     const widget = {
       content: { menu: [] },
       RenderWidget: { props: { menu: [{ items: [{ type: 'item', href: '/existing', content: 'Existing' }] }] } },
@@ -47,7 +47,7 @@ describe('HeaderUserMenuItems', () => {
       {
         type: 'item',
         href: 'https://example.com/gamma_dashboard/dashboard/',
-        content: 'Performance',
+        content: 'Your Badges',
       },
       {
         type: 'item',
@@ -73,7 +73,7 @@ describe('HeaderUserMenuItems', () => {
       {
         type: 'item',
         href: 'https://example.com/gamma_dashboard/dashboard/',
-        content: 'Performance',
+        content: 'Your Badges',
       },
       {
         type: 'item',
@@ -99,7 +99,7 @@ describe('LearningHeaderUserMenuItems', () => {
     getAuthenticatedUser.mockReturnValue({ username: 'openedx', administrator: false });
   });
 
-  it('prepends Performance + Leaderboard items to learning header items', () => {
+  it('prepends Your Badges + Leaderboard items to learning header items', () => {
     const widget = {
       content: { items: [] },
       RenderWidget: { props: { items: [{ href: '/existing', content: 'Existing' }] } },
@@ -109,8 +109,8 @@ describe('LearningHeaderUserMenuItems', () => {
 
     const items = JSON.parse(screen.getByTestId('items').textContent);
     expect(items).toEqual([
-      { href: 'https://example.com/gamma_dashboard/dashboard/', content: 'Performance' },
-      { href: 'https://example.com/gamma_dashboard/leaderboard/', content: 'Leaderboard' },
+      { href: 'https://example.com/gamma_dashboard/dashboard/', content: 'Your Badges', message: 'Your Badges' },
+      { href: 'https://example.com/gamma_dashboard/leaderboard/', content: 'Leaderboard', message: 'Leaderboard' },
       { href: '/existing', content: 'Existing' },
     ]);
   });
@@ -127,9 +127,9 @@ describe('LearningHeaderUserMenuItems', () => {
 
     const items = JSON.parse(screen.getByTestId('items').textContent);
     expect(items).toEqual([
-      { href: 'https://example.com/gamma_dashboard/dashboard/', content: 'Performance' },
-      { href: 'https://example.com/gamma_dashboard/leaderboard/', content: 'Leaderboard' },
-      { href: 'https://example.com/gamma_settings/', content: 'Gamification Settings' },
+      { href: 'https://example.com/gamma_dashboard/dashboard/', content: 'Your Badges', message: 'Your Badges' },
+      { href: 'https://example.com/gamma_dashboard/leaderboard/', content: 'Leaderboard', message: 'Leaderboard' },
+      { href: 'https://example.com/gamma_settings/', content: 'Gamification Settings', message: 'Gamification Settings' },
     ]);
   });
 });

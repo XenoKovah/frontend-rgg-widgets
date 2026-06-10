@@ -83,7 +83,7 @@ describe('BadgeNotifications', () => {
     expect(markSeen).toHaveBeenCalledWith([NOTIFICATIONS[0].uuid]);
 
     const link = screen.getByText('View your badges');
-    expect(link).toHaveAttribute('href', 'https://example.com/u/openedx');
+    expect(link).toHaveAttribute('href', 'https://example.com/gamma_dashboard/dashboard/');
   });
 
   it('shows queued badges one at a time and acknowledges each on display', async () => {

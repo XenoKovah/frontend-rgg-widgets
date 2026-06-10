@@ -7,7 +7,7 @@ import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { Hyperlink, Image, Toast } from '@openedx/paragon';
 
 import { useBadgeNotifications, useMarkBadgeNotificationsSeen } from '../../data/hooks';
-import { getUserProfileUrl } from '../../data/urls';
+import { getGammaDashboardUrl } from '../../data/urls';
 import messages from './messages';
 
 import './index.scss';
@@ -89,7 +89,7 @@ const BadgeNotifications = () => {
           </p>
           <p className="mb-1">{current.title}</p>
           <Hyperlink
-            destination={getUserProfileUrl(authenticatedUser.username)}
+            destination={getGammaDashboardUrl()}
             className="rgg-badge-notification-link"
           >
             {intl.formatMessage(messages['rgg.badge.notifications.view.badges'])}

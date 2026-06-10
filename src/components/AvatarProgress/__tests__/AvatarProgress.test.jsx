@@ -88,7 +88,7 @@ describe('AvatarProgress', () => {
       const popover = await getPopover(baseElement);
 
       expect(popover?.textContent).toMatch('Your avatar is chosen, but your journey has just begun. Earn your first points to unlock Level 1 - see progress on the Performance page.');
-      expect(screen.queryByAltText('Your badge avatar')).not.toBeInTheDocument();
+      expect(screen.queryByAltText('Your accomplishment avatar')).not.toBeInTheDocument();
       expect(screen.queryByText(/\/\d+/)).not.toBeInTheDocument();
       expect(screen.queryByText('Your progress')).not.toBeInTheDocument();
     });
@@ -104,7 +104,7 @@ describe('AvatarProgress', () => {
 
       expect(popover?.textContent).toMatch(/haven.*t chosen an avatar yet/i);
       expect(screen.getByRole('link', { name: /Performance page/i })).toHaveAttribute('href', 'https://example.com/gamma_dashboard/dashboard/');
-      expect(screen.queryByAltText('Your badge avatar')).not.toBeInTheDocument();
+      expect(screen.queryByAltText('Your accomplishment avatar')).not.toBeInTheDocument();
       expect(screen.queryByText(/\/\d+/)).not.toBeInTheDocument();
       expect(screen.queryByText('Your progress')).not.toBeInTheDocument();
     });
@@ -115,7 +115,7 @@ describe('AvatarProgress', () => {
       await renderAndOpenPopover({ data: mockFullyDevelopedAvatar });
 
       expect(screen.getByText(/Congratulations, your avatar is fully developed/)).toBeInTheDocument();
-      const avatar = screen.getByAltText('Your badge avatar');
+      const avatar = screen.getByAltText('Your accomplishment avatar');
       expect(avatar).toHaveAttribute('src', mockFullyDevelopedAvatar.current_avatar.image);
       expect(screen.getByText('210/200')).toBeInTheDocument();
       expect(screen.getByText('Your progress')).toBeInTheDocument();
@@ -128,7 +128,7 @@ describe('AvatarProgress', () => {
       await renderAndOpenPopover({ data: mockAvatarProgress });
 
       expect(screen.getByText(new RegExp(`Congratulations, your avatar is Level ${mockAvatarProgress.current_avatar.stage} now`))).toBeInTheDocument();
-      expect(screen.getByAltText('Your badge avatar')).toHaveAttribute('src', mockAvatarProgress.current_avatar.image);
+      expect(screen.getByAltText('Your accomplishment avatar')).toHaveAttribute('src', mockAvatarProgress.current_avatar.image);
       expect(screen.getByText('60/100')).toBeInTheDocument();
       expect(screen.getByText('Your progress')).toBeInTheDocument();
       expect(screen.getByText(`Level ${mockAvatarProgress.current_avatar.stage}`)).toBeInTheDocument();

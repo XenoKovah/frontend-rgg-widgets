@@ -77,12 +77,12 @@ describe('BadgeNotifications', () => {
   it('shows the toast for an earned badge and acknowledges it as seen', () => {
     renderWidget({ data: { enabled: true, notifications: [NOTIFICATIONS[0]] } });
 
-    expect(screen.getByText('You earned a badge!')).toBeInTheDocument();
+    expect(screen.getByText('You earned an accomplishment!')).toBeInTheDocument();
     expect(screen.getByText('Point Collector')).toBeInTheDocument();
     expect(markSeen).toHaveBeenCalledTimes(1);
     expect(markSeen).toHaveBeenCalledWith([NOTIFICATIONS[0].uuid]);
 
-    const link = screen.getByText('View your badges');
+    const link = screen.getByText('View your accomplishments');
     expect(link).toHaveAttribute('href', 'https://example.com/gamma_dashboard/dashboard/');
   });
 

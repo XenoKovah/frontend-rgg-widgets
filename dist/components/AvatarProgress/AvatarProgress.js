@@ -88,7 +88,7 @@ const AvatarProgress = () => {
             children: [/*#__PURE__*/(0, _jsxRuntime.jsx)(_paragon.Avatar, {
               size: "xl",
               src: currentAvatar?.image,
-              alt: "Your badge avatar",
+              alt: "Your accomplishment avatar",
               className: "d-block mx-auto rounded-0 mt-2"
             }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_paragon.ProgressBar, {
               now: currentProgressPercentage,

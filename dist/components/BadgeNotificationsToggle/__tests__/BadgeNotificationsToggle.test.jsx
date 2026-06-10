@@ -40,19 +40,19 @@ describe('BadgeNotificationsToggle', () => {
     renderWidget({ data: true });
 
     expect(screen.getByText('Gamification')).toBeInTheDocument();
-    expect(screen.getByRole('switch', { name: 'Badge notifications' })).toBeChecked();
+    expect(screen.getByRole('switch', { name: 'Accomplishment notifications' })).toBeChecked();
   });
 
   it('renders an unchecked switch when the user opted out', () => {
     renderWidget({ data: false });
 
-    expect(screen.getByRole('switch', { name: 'Badge notifications' })).not.toBeChecked();
+    expect(screen.getByRole('switch', { name: 'Accomplishment notifications' })).not.toBeChecked();
   });
 
   it('persists the flipped preference', () => {
     renderWidget({ data: true });
 
-    fireEvent.click(screen.getByRole('switch', { name: 'Badge notifications' }));
+    fireEvent.click(screen.getByRole('switch', { name: 'Accomplishment notifications' }));
 
     expect(updatePreference).toHaveBeenCalledTimes(1);
     expect(updatePreference).toHaveBeenCalledWith(false);

@@ -98,7 +98,7 @@ const AvatarProgress = () => {
                   <Avatar
                     size="xl"
                     src={currentAvatar?.image}
-                    alt="Your badge avatar"
+                    alt="Your accomplishment avatar"
                     className="d-block mx-auto rounded-0 mt-2"
                   />
                   <ProgressBar

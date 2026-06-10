@@ -43,7 +43,7 @@ describe('ProfileBadges', () => {
       ],
     });
 
-    expect(screen.getByText('Earned Badges')).toBeInTheDocument();
+    expect(screen.getByText('Earned Accomplishments')).toBeInTheDocument();
     expect(screen.getAllByTestId('rgg-profile-badge')).toHaveLength(2);
     expect(screen.getByText('Answerer')).toBeInTheDocument();
     expect(screen.getByText('Answered a question in the Discussions section.')).toBeInTheDocument();
@@ -54,7 +54,7 @@ describe('ProfileBadges', () => {
     const { container } = renderWidget({ data: [] });
 
     expect(container).toBeEmptyDOMElement();
-    expect(screen.queryByText('Earned Badges')).not.toBeInTheDocument();
+    expect(screen.queryByText('Earned Accomplishments')).not.toBeInTheDocument();
   });
 
   it('renders nothing while loading', () => {

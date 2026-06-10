@@ -8,7 +8,7 @@ var _i18n = require("@edx/frontend-platform/i18n");
 const messages = (0, _i18n.defineMessages)({
   'rgg.avatar.header.user.dropdown.performance.link': {
     id: 'rgg.avatar.header.user.dropdown.performance.link',
-    defaultMessage: 'Your Badges',
+    defaultMessage: 'Your Accomplishments',
     description: ''
   },
   'rgg.avatar.header.user.dropdown.leaderboard.link': {

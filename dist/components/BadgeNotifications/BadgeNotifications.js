@@ -89,7 +89,7 @@ const BadgeNotifications = () => {
           className: "mb-1",
           children: current.title
         }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_paragon.Hyperlink, {
-          destination: (0, _urls.getUserProfileUrl)(authenticatedUser.username),
+          destination: (0, _urls.getGammaDashboardUrl)(),
           className: "rgg-badge-notification-link",
           children: intl.formatMessage(_messages.default['rgg.badge.notifications.view.badges'])
         })]

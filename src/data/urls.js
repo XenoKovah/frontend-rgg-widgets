@@ -10,4 +10,4 @@ export const getBadgeNotificationsUrl = () => `${getConfig().LMS_BASE_URL}/gamma
 
 export const getUserPreferencesUrl = (username) => `${getConfig().LMS_BASE_URL}/api/user/v1/preferences/${username}`;
 
-export const getUserProfileUrl = (username) => `${getConfig().LMS_BASE_URL}/u/${username}`;
+export const getGammaDashboardUrl = () => `${getConfig().LMS_BASE_URL}/gamma_dashboard/dashboard/`;

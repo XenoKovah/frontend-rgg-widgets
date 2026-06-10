@@ -40,6 +40,10 @@ export const useUserBadges = (username) => (
     queryFn: () => fetchUserBadges(username),
     enabled: Boolean(username),
     retry: retryFn,
+    // The API returns badges in award order; show the collection alphabetically.
+    select: (badges) => [...(badges || [])].sort(
+      (a, b) => (a.title || '').localeCompare(b.title || '', undefined, { sensitivity: 'base' }),
+    ),
   })
 );
 

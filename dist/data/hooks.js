@@ -32,7 +32,11 @@ const useUserBadges = username => (0, _reactQuery.useQuery)({
   queryKey: ['userBadges', username],
   queryFn: () => (0, _api.fetchUserBadges)(username),
   enabled: Boolean(username),
-  retry: retryFn
+  retry: retryFn,
+  // The API returns badges in award order; show the collection alphabetically.
+  select: badges => [...(badges || [])].sort((a, b) => (a.title || '').localeCompare(b.title || '', undefined, {
+    sensitivity: 'base'
+  }))
 });
 exports.useUserBadges = useUserBadges;
 const useBadgeNotifications = enabled => (0, _reactQuery.useQuery)({

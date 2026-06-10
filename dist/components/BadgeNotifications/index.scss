@@ -1,0 +1,13 @@
+.rgg-badge-notification-toast {
+  .rgg-badge-notification-image {
+    width: 3rem;
+    height: 3rem;
+    object-fit: contain;
+  }
+
+  .rgg-badge-notification-link {
+    // The toast background is dark; Paragon's default link color is unreadable on it.
+    color: inherit;
+    text-decoration: underline;
+  }
+}

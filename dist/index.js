@@ -9,6 +9,18 @@ Object.defineProperty(exports, "AvatarProgress", {
     return _AvatarProgress.default;
   }
 });
+Object.defineProperty(exports, "BadgeNotifications", {
+  enumerable: true,
+  get: function () {
+    return _BadgeNotifications.default;
+  }
+});
+Object.defineProperty(exports, "BadgeNotificationsToggle", {
+  enumerable: true,
+  get: function () {
+    return _BadgeNotificationsToggle.default;
+  }
+});
 Object.defineProperty(exports, "HeaderUserMenuItems", {
   enumerable: true,
   get: function () {
@@ -28,6 +40,8 @@ Object.defineProperty(exports, "ProfileBadges", {
   }
 });
 var _AvatarProgress = _interopRequireDefault(require("./components/AvatarProgress"));
+var _BadgeNotifications = _interopRequireDefault(require("./components/BadgeNotifications"));
+var _BadgeNotificationsToggle = _interopRequireDefault(require("./components/BadgeNotificationsToggle"));
 var _ProfileBadges = _interopRequireDefault(require("./components/ProfileBadges"));
 var _HeaderUserMenuItems = require("./components/HeaderUserMenuItems");
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }

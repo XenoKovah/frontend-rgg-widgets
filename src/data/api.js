@@ -1,6 +1,17 @@
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 
-import { getGammaProfileUrl, getUserBadgesUrl } from './urls';
+import {
+  getBadgeNotificationsUrl,
+  getGammaProfileUrl,
+  getUserBadgesUrl,
+  getUserPreferencesUrl,
+} from './urls';
+
+/**
+ * Open edX user-preference key for the "badge earned" pop-up opt-out.
+ * Must match BADGE_NOTIFICATIONS_PREFERENCE_KEY in edx-gamma-dashboard.
+ */
+export const BADGE_NOTIFICATIONS_PREFERENCE_KEY = 'rgg_badge_notifications';
 
 /**
  * Fetches profile avatar data from the API.
@@ -26,4 +37,55 @@ export const fetchGammaProfileData = async (username) => {
 export const fetchUserBadges = async (username) => {
   const { data } = await getAuthenticatedHttpClient().get(getUserBadgesUrl(username));
   return data;
+};
+
+/**
+ * Fetches the current user's pending "badge earned" notifications.
+ *
+ * @async
+ * @returns {Promise<{enabled: boolean, notifications: Array<{uuid: string, slug: string,
+ *   title: string, description: string, image: string, completed_at: string}>}>}
+ */
+export const fetchBadgeNotifications = async () => {
+  const { data } = await getAuthenticatedHttpClient().get(getBadgeNotificationsUrl());
+  return data;
+};
+
+/**
+ * Acknowledges shown badge notifications so they are never shown again.
+ *
+ * @async
+ * @param {Array<string>} uuids - Achievement uuids whose toasts were displayed.
+ * @returns {Promise<{count: number}>}
+ */
+export const markBadgeNotificationsSeen = async (uuids) => {
+  const { data } = await getAuthenticatedHttpClient().post(getBadgeNotificationsUrl(), { uuids });
+  return data;
+};
+
+/**
+ * Reads whether the user wants "badge earned" pop-ups (default: true when unset).
+ *
+ * @async
+ * @param {string} username - The requesting user's own username.
+ * @returns {Promise<boolean>}
+ */
+export const fetchBadgeNotificationsPreference = async (username) => {
+  const { data } = await getAuthenticatedHttpClient().get(getUserPreferencesUrl(username));
+  return data?.[BADGE_NOTIFICATIONS_PREFERENCE_KEY] !== 'false';
+};
+
+/**
+ * Persists the user's "badge earned" pop-up preference.
+ *
+ * @async
+ * @param {string} username - The requesting user's own username.
+ * @param {boolean} enabled - Whether pop-ups should be shown.
+ */
+export const updateBadgeNotificationsPreference = async (username, enabled) => {
+  await getAuthenticatedHttpClient().patch(
+    getUserPreferencesUrl(username),
+    { [BADGE_NOTIFICATIONS_PREFERENCE_KEY]: enabled ? 'true' : 'false' },
+    { headers: { 'Content-Type': 'application/merge-patch+json' } },
+  );
 };

@@ -8,9 +8,25 @@ import messages from './messages';
 // header, not by RGG) to course-specific wording. Keyed by the platform's English
 // label; any item whose label isn't listed is passed through unchanged.
 const PLATFORM_MENU_RENAMES = {
-  Dashboard: 'Class Dashboard',
   Profile: 'Public Profile',
   Account: 'Account Settings',
+};
+
+// Stock header items OST2 hides so every user menu matches the learner-dashboard
+// MFE's (Your Badges / Leaderboard / Public Profile / Account Settings / Sign Out):
+// the course-list links ("My Courses"/"Dashboard" -> /dashboard) and course
+// discovery ("Discover" -> /courses). Matched by href rather than label so
+// renames elsewhere can't bring them back.
+const HIDDEN_PLATFORM_MENU_PATHS = ['/dashboard', '/courses'];
+
+const isHiddenPlatformItem = (item) => {
+  if (!item || typeof item.href !== 'string') {
+    return false;
+  }
+  const lmsBaseUrl = getConfig().LMS_BASE_URL || '';
+  return HIDDEN_PLATFORM_MENU_PATHS.some(
+    (path) => item.href === `${lmsBaseUrl}${path}` || item.href === path,
+  );
 };
 
 // Return a copy of a menu item with its label(s) renamed per PLATFORM_MENU_RENAMES,
@@ -59,7 +75,7 @@ export const HeaderUserMenuItems = (widget) => {
 
   const platformMenu = (widget.RenderWidget.props.menu || []).map((group) => (
     group && Array.isArray(group.items)
-      ? { ...group, items: group.items.map(relabelMenuItem) }
+      ? { ...group, items: group.items.filter((item) => !isHiddenPlatformItem(item)).map(relabelMenuItem) }
       : group
   ));
 
@@ -102,7 +118,9 @@ export const LearningHeaderUserMenuItems = (widget) => {
   // eslint-disable-next-line no-param-reassign
   widget.content.items = [
     ...items,
-    ...(widget.RenderWidget.props.items || []).map(relabelMenuItem),
+    ...(widget.RenderWidget.props.items || [])
+      .filter((item) => !isHiddenPlatformItem(item))
+      .map(relabelMenuItem),
   ];
 
   return widget;

@@ -88,14 +88,15 @@ describe('HeaderUserMenuItems', () => {
     ]);
   });
 
-  it('relabels stock platform items (Dashboard/Profile/Account) in the legacy header menu', () => {
+  it('hides course-list/discovery links and relabels the rest (legacy header menu)', () => {
     const widget = {
       content: { menu: [] },
       RenderWidget: {
         props: {
           menu: [{
             items: [
-              { type: 'item', href: '/dashboard', content: 'Dashboard' },
+              { type: 'item', href: 'https://example.com/dashboard', content: 'Dashboard' },
+              { type: 'item', href: 'https://example.com/courses', content: 'Discover' },
               { type: 'item', href: '/u/openedx', content: 'Profile' },
               { type: 'item', href: '/account', content: 'Account' },
               { type: 'item', href: '/logout', content: 'Sign Out' },
@@ -109,7 +110,7 @@ describe('HeaderUserMenuItems', () => {
 
     const menu = JSON.parse(screen.getByTestId('menu').textContent);
     expect(menu[1].items.map((i) => i.content)).toEqual([
-      'Class Dashboard', 'Public Profile', 'Account Settings', 'Sign Out',
+      'Public Profile', 'Account Settings', 'Sign Out',
     ]);
   });
 });
@@ -158,13 +159,17 @@ describe('LearningHeaderUserMenuItems', () => {
     ]);
   });
 
-  it('relabels stock platform items (Dashboard/Profile/Account) in the learning header items', () => {
+  it('hides course-list/discovery links and relabels the rest (learning header items)', () => {
+    // Mirrors the Edly learning header's real default items: My Courses and
+    // Dashboard both point at /dashboard, Discover at /courses.
     const widget = {
       content: { items: [] },
       RenderWidget: {
         props: {
           items: [
-            { href: '/dashboard', content: 'Dashboard', message: 'Dashboard' },
+            { href: 'https://example.com/dashboard', content: 'My Courses', message: 'My Courses' },
+            { href: 'https://example.com/courses', content: 'Discover', message: 'Discover' },
+            { href: 'https://example.com/dashboard', content: 'Dashboard', message: 'Dashboard' },
             { href: '/u/openedx', content: 'Profile', message: 'Profile' },
             { href: '/account', content: 'Account', message: 'Account' },
             { href: '/logout', content: 'Sign Out', message: 'Sign Out' },
@@ -176,12 +181,12 @@ describe('LearningHeaderUserMenuItems', () => {
     render(<WidgetMutatorRunner mutate={LearningHeaderUserMenuItems} widget={widget} />, { wrapper });
 
     const items = JSON.parse(screen.getByTestId('items').textContent);
-    // The first two are the prepended RGG items; the platform items follow and are relabeled.
+    // The first two are the prepended RGG items; the surviving platform items follow.
     expect(items.slice(2).map((i) => i.content)).toEqual([
-      'Class Dashboard', 'Public Profile', 'Account Settings', 'Sign Out',
+      'Public Profile', 'Account Settings', 'Sign Out',
     ]);
     expect(items.slice(2).map((i) => i.message)).toEqual([
-      'Class Dashboard', 'Public Profile', 'Account Settings', 'Sign Out',
+      'Public Profile', 'Account Settings', 'Sign Out',
     ]);
   });
 });

@@ -54,35 +54,52 @@ const relabelMenuItem = item => {
   });
   return updated;
 };
+
+// The RGG gamification links (Your Accomplishments / Leaderboard / Gamification
+// Settings) are hidden from learners until the runtime flag is turned on. The boolean
+// is delivered globally via MFE_CONFIG (getConfig().RGG_STUDENT_UI_VISIBLE); staff/admins
+// bypass it in the callers below so they can preview while it is hidden. The platform
+// menu relabel/hide above is NOT gamification and always applies. Undefined => hidden.
+const isStudentUiVisible = () => {
+  const value = (0, _frontendPlatform.getConfig)().RGG_STUDENT_UI_VISIBLE;
+  return value === true || value === 'true';
+};
 const HeaderUserMenuItems = widget => {
   const intl = (0, _i18n.useIntl)();
   const {
     administrator
   } = (0, _auth.getAuthenticatedUser)();
-  const items = [{
-    type: 'item',
-    href: `${(0, _frontendPlatform.getConfig)().LMS_BASE_URL}/gamma_dashboard/dashboard/`,
-    content: intl.formatMessage(_messages.default['rgg.avatar.header.user.dropdown.performance.link'])
-  }, {
-    type: 'item',
-    href: `${(0, _frontendPlatform.getConfig)().LMS_BASE_URL}/gamma_dashboard/leaderboard/`,
-    content: intl.formatMessage(_messages.default['rgg.avatar.header.user.dropdown.leaderboard.link'])
-  }];
-  if (administrator) {
+  const showGamification = isStudentUiVisible() || administrator;
+  const items = [];
+  if (showGamification) {
     items.push({
       type: 'item',
-      href: `${(0, _frontendPlatform.getConfig)().GAMMA_SETTINGS_URL}`,
-      content: intl.formatMessage(_messages.default['rgg.avatar.header.user.dropdown.gamification-settings.link'])
+      href: `${(0, _frontendPlatform.getConfig)().LMS_BASE_URL}/gamma_dashboard/dashboard/`,
+      content: intl.formatMessage(_messages.default['rgg.avatar.header.user.dropdown.performance.link'])
+    }, {
+      type: 'item',
+      href: `${(0, _frontendPlatform.getConfig)().LMS_BASE_URL}/gamma_dashboard/leaderboard/`,
+      content: intl.formatMessage(_messages.default['rgg.avatar.header.user.dropdown.leaderboard.link'])
     });
+    if (administrator) {
+      items.push({
+        type: 'item',
+        href: `${(0, _frontendPlatform.getConfig)().GAMMA_SETTINGS_URL}`,
+        content: intl.formatMessage(_messages.default['rgg.avatar.header.user.dropdown.gamification-settings.link'])
+      });
+    }
   }
   const platformMenu = (widget.RenderWidget.props.menu || []).map(group => group && Array.isArray(group.items) ? _objectSpread(_objectSpread({}, group), {}, {
     items: group.items.filter(item => !isHiddenPlatformItem(item)).map(relabelMenuItem)
   }) : group);
 
   // eslint-disable-next-line no-param-reassign
-  widget.content.menu = [{
+  widget.content.menu = [
+  // Only prepend the gamification group when it has items, so a hidden learner
+  // never gets an empty group (which would render a stray divider).
+  ...(items.length ? [{
     items
-  }, ...platformMenu];
+  }] : []), ...platformMenu];
   return widget;
 };
 exports.HeaderUserMenuItems = HeaderUserMenuItems;
@@ -91,26 +108,30 @@ const LearningHeaderUserMenuItems = widget => {
   const {
     administrator
   } = (0, _auth.getAuthenticatedUser)();
+  const showGamification = isStudentUiVisible() || administrator;
 
   // MFE Learning currently supports two header implementations:
   // - `content` → used by the Header component
   // - `message` → used by the default LearningHeader
   // Both fields are required for compatibility.
-  const items = [{
-    href: `${(0, _frontendPlatform.getConfig)().LMS_BASE_URL}/gamma_dashboard/dashboard/`,
-    content: intl.formatMessage(_messages.default['rgg.avatar.header.user.dropdown.performance.link']),
-    message: intl.formatMessage(_messages.default['rgg.avatar.header.user.dropdown.performance.link'])
-  }, {
-    href: `${(0, _frontendPlatform.getConfig)().LMS_BASE_URL}/gamma_dashboard/leaderboard/`,
-    content: intl.formatMessage(_messages.default['rgg.avatar.header.user.dropdown.leaderboard.link']),
-    message: intl.formatMessage(_messages.default['rgg.avatar.header.user.dropdown.leaderboard.link'])
-  }];
-  if (administrator) {
+  const items = [];
+  if (showGamification) {
     items.push({
-      href: `${(0, _frontendPlatform.getConfig)().GAMMA_SETTINGS_URL}`,
-      content: intl.formatMessage(_messages.default['rgg.avatar.header.user.dropdown.gamification-settings.link']),
-      message: intl.formatMessage(_messages.default['rgg.avatar.header.user.dropdown.gamification-settings.link'])
+      href: `${(0, _frontendPlatform.getConfig)().LMS_BASE_URL}/gamma_dashboard/dashboard/`,
+      content: intl.formatMessage(_messages.default['rgg.avatar.header.user.dropdown.performance.link']),
+      message: intl.formatMessage(_messages.default['rgg.avatar.header.user.dropdown.performance.link'])
+    }, {
+      href: `${(0, _frontendPlatform.getConfig)().LMS_BASE_URL}/gamma_dashboard/leaderboard/`,
+      content: intl.formatMessage(_messages.default['rgg.avatar.header.user.dropdown.leaderboard.link']),
+      message: intl.formatMessage(_messages.default['rgg.avatar.header.user.dropdown.leaderboard.link'])
     });
+    if (administrator) {
+      items.push({
+        href: `${(0, _frontendPlatform.getConfig)().GAMMA_SETTINGS_URL}`,
+        content: intl.formatMessage(_messages.default['rgg.avatar.header.user.dropdown.gamification-settings.link']),
+        message: intl.formatMessage(_messages.default['rgg.avatar.header.user.dropdown.gamification-settings.link'])
+      });
+    }
   }
 
   // eslint-disable-next-line no-param-reassign

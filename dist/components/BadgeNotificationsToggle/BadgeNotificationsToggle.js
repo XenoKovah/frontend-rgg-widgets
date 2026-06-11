@@ -5,6 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 var _react = _interopRequireDefault(require("react"));
+var _frontendPlatform = require("@edx/frontend-platform");
 var _i18n = require("@edx/frontend-platform/i18n");
 var _auth = require("@edx/frontend-platform/auth");
 var _paragon = require("@openedx/paragon");
@@ -30,6 +31,14 @@ function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e
     mutate: updatePreference
   } = (0, _hooks.useUpdateBadgeNotificationsPreference)(username);
   if (!username) {
+    return null;
+  }
+
+  // Hidden while the student gamification UI is off (RGG_STUDENT_UI_VISIBLE), unless the
+  // user is staff/admin (preview) — mirrors the header gamification-link gating.
+  const flag = (0, _frontendPlatform.getConfig)().RGG_STUDENT_UI_VISIBLE;
+  const studentUiVisible = flag === true || flag === 'true';
+  if (!studentUiVisible && !authenticatedUser?.administrator) {
     return null;
   }
   return /*#__PURE__*/(0, _jsxRuntime.jsxs)("div", {

@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { getConfig } from '@edx/frontend-platform';
 import { useIntl } from '@edx/frontend-platform/i18n';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { Form } from '@openedx/paragon';
@@ -25,6 +26,14 @@ const BadgeNotificationsToggle = () => {
   const { mutate: updatePreference } = useUpdateBadgeNotificationsPreference(username);
 
   if (!username) {
+    return null;
+  }
+
+  // Hidden while the student gamification UI is off (RGG_STUDENT_UI_VISIBLE), unless the
+  // user is staff/admin (preview) — mirrors the header gamification-link gating.
+  const flag = getConfig().RGG_STUDENT_UI_VISIBLE;
+  const studentUiVisible = flag === true || flag === 'true';
+  if (!studentUiVisible && !authenticatedUser?.administrator) {
     return null;
   }
 

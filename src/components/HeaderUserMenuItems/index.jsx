@@ -58,6 +58,27 @@ const isStudentUiVisible = () => {
   return value === true || value === 'true';
 };
 
+// The learning header renders the user menu as one flat list of links (no
+// groups), so -- unlike the grouped standard/legacy headers, which get a divider
+// between their RGG group and the platform group -- it has no separator between
+// the RGG gamification links and the platform links. Inject a scoped style once
+// that draws a top border on the first platform link immediately following the
+// RGG links. The adjacent-sibling match only fires in this flat list; the grouped
+// headers keep the two sets in separate containers, so their existing group
+// divider is never doubled. Only mounted in the learning MFE, and only matches
+// gamma hrefs, so platform links are never affected.
+const LEARNING_MENU_DIVIDER_STYLE_ID = 'rgg-learning-menu-divider';
+const ensureLearningMenuDivider = () => {
+  if (typeof document === 'undefined' || document.getElementById(LEARNING_MENU_DIVIDER_STYLE_ID)) {
+    return;
+  }
+  const style = document.createElement('style');
+  style.id = LEARNING_MENU_DIVIDER_STYLE_ID;
+  style.textContent = '.dropdown-menu a.dropdown-item[href*="gamma"] + a.dropdown-item:not([href*="gamma"])'
+    + '{border-top:1px solid var(--pgn-color-light-400,#e5e7eb);margin-top:.5rem;padding-top:.75rem;}';
+  document.head.appendChild(style);
+};
+
 export const HeaderUserMenuItems = (widget) => {
   const intl = useIntl();
   const { administrator } = getAuthenticatedUser();
@@ -133,6 +154,9 @@ export const LearningHeaderUserMenuItems = (widget) => {
         message: intl.formatMessage(messages['rgg.avatar.header.user.dropdown.gamification-settings.link']),
       });
     }
+
+    // The flat learning list has no group divider; draw one at the RGG/platform boundary.
+    ensureLearningMenuDivider();
   }
 
   // eslint-disable-next-line no-param-reassign

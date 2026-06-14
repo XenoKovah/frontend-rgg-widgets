@@ -7,7 +7,9 @@ import { Form } from '@openedx/paragon';
 
 import {
   useBadgeNotificationsPreference,
+  useLeaderboardOptOut,
   useUpdateBadgeNotificationsPreference,
+  useUpdateLeaderboardOptOut,
 } from '../../data/hooks';
 import messages from './messages';
 
@@ -24,6 +26,8 @@ const BadgeNotificationsToggle = () => {
   const username = authenticatedUser?.username;
   const { data: enabled, isLoading } = useBadgeNotificationsPreference(username);
   const { mutate: updatePreference } = useUpdateBadgeNotificationsPreference(username);
+  const { data: optedOut, isLoading: isOptOutLoading } = useLeaderboardOptOut(username);
+  const { mutate: updateOptOut } = useUpdateLeaderboardOptOut(username);
 
   if (!username) {
     return null;
@@ -50,6 +54,16 @@ const BadgeNotificationsToggle = () => {
         data-testid="rgg-badge-notifications-toggle"
       >
         {intl.formatMessage(messages['rgg.badge.notifications.toggle.label'])}
+      </Form.Switch>
+      <Form.Switch
+        className="mt-3"
+        checked={Boolean(optedOut)}
+        disabled={isOptOutLoading}
+        onChange={(event) => updateOptOut(event.target.checked)}
+        helperText={intl.formatMessage(messages['rgg.leaderboard.optout.toggle.description'])}
+        data-testid="rgg-leaderboard-optout-toggle"
+      >
+        {intl.formatMessage(messages['rgg.leaderboard.optout.toggle.label'])}
       </Form.Switch>
     </div>
   );

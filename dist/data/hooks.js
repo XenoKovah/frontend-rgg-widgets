@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.useUserBadges = exports.useUpdateBadgeNotificationsPreference = exports.useMarkBadgeNotificationsSeen = exports.useGammaProfileData = exports.useBadgeNotificationsPreference = exports.useBadgeNotifications = exports.retryFn = exports.BADGE_NOTIFICATIONS_POLL_INTERVAL_MS = void 0;
+exports.useUserBadges = exports.useUpdateLeaderboardOptOut = exports.useUpdateBadgeNotificationsPreference = exports.useMarkBadgeNotificationsSeen = exports.useLeaderboardOptOut = exports.useGammaProfileData = exports.useBadgeNotificationsPreference = exports.useBadgeNotifications = exports.retryFn = exports.BADGE_NOTIFICATIONS_POLL_INTERVAL_MS = void 0;
 var _reactQuery = require("@tanstack/react-query");
 var _api = require("./api");
 /**
@@ -87,4 +87,37 @@ const useUpdateBadgeNotificationsPreference = username => {
   });
 };
 exports.useUpdateBadgeNotificationsPreference = useUpdateBadgeNotificationsPreference;
+const useLeaderboardOptOut = username => (0, _reactQuery.useQuery)({
+  queryKey: ['leaderboardOptOut', username],
+  queryFn: _api.fetchLeaderboardOptOut,
+  enabled: Boolean(username),
+  retry: retryFn
+});
+exports.useLeaderboardOptOut = useLeaderboardOptOut;
+const useUpdateLeaderboardOptOut = username => {
+  const queryClient = (0, _reactQuery.useQueryClient)();
+  return (0, _reactQuery.useMutation)({
+    mutationFn: optedOut => (0, _api.updateLeaderboardOptOut)(optedOut),
+    // Optimistic flip so the switch feels instant; reconcile with the server after.
+    onMutate: async optedOut => {
+      await queryClient.cancelQueries({
+        queryKey: ['leaderboardOptOut', username]
+      });
+      const previous = queryClient.getQueryData(['leaderboardOptOut', username]);
+      queryClient.setQueryData(['leaderboardOptOut', username], optedOut);
+      return {
+        previous
+      };
+    },
+    onError: (_error, _optedOut, context) => {
+      queryClient.setQueryData(['leaderboardOptOut', username], context?.previous);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['leaderboardOptOut', username]
+      });
+    }
+  });
+};
+exports.useUpdateLeaderboardOptOut = useUpdateLeaderboardOptOut;
 //# sourceMappingURL=hooks.js.map

@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getUserPreferencesUrl = exports.getUserBadgesUrl = exports.getGammaProfileUrl = exports.getGammaDashboardUrl = exports.getBadgeNotificationsUrl = exports.getBadgeLeaderboardUrl = void 0;
+exports.getUserPreferencesUrl = exports.getUserBadgesUrl = exports.getLeaderboardOptOutUrl = exports.getGammaProfileUrl = exports.getGammaDashboardUrl = exports.getBadgeNotificationsUrl = exports.getBadgeLeaderboardUrl = void 0;
 var _frontendPlatform = require("@edx/frontend-platform");
 const getGammaProfileUrl = username => `${(0, _frontendPlatform.getConfig)().LMS_BASE_URL}/gamma_dashboard/api/v0/avatar-progress/${username}/`;
 exports.getGammaProfileUrl = getGammaProfileUrl;
@@ -13,6 +13,8 @@ const getBadgeLeaderboardUrl = slug => `${(0, _frontendPlatform.getConfig)().LMS
 exports.getBadgeLeaderboardUrl = getBadgeLeaderboardUrl;
 const getBadgeNotificationsUrl = () => `${(0, _frontendPlatform.getConfig)().LMS_BASE_URL}/gamma_dashboard/api/v0/badge-notifications/`;
 exports.getBadgeNotificationsUrl = getBadgeNotificationsUrl;
+const getLeaderboardOptOutUrl = () => `${(0, _frontendPlatform.getConfig)().LMS_BASE_URL}/gamma_dashboard/api/v0/leaderboard-opt-out/`;
+exports.getLeaderboardOptOutUrl = getLeaderboardOptOutUrl;
 const getUserPreferencesUrl = username => `${(0, _frontendPlatform.getConfig)().LMS_BASE_URL}/api/user/v1/preferences/${username}`;
 exports.getUserPreferencesUrl = getUserPreferencesUrl;
 const getGammaDashboardUrl = () => `${(0, _frontendPlatform.getConfig)().LMS_BASE_URL}/gamma_dashboard/dashboard/`;

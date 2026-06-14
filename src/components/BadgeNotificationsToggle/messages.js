@@ -16,6 +16,16 @@ const messages = defineMessages({
     defaultMessage: 'Show a pop-up congratulation when you earn an accomplishment.',
     description: 'Helper text under the badge notifications switch in Account Settings.',
   },
+  'rgg.leaderboard.optout.toggle.label': {
+    id: 'rgg.leaderboard.optout.toggle.label',
+    defaultMessage: 'Opt out of leaderboard ranking',
+    description: 'Label of the Account Settings switch that hides the learner from all leaderboards.',
+  },
+  'rgg.leaderboard.optout.toggle.description': {
+    id: 'rgg.leaderboard.optout.toggle.description',
+    defaultMessage: 'Hide me from every leaderboard (main, course, and country). You still earn and keep your points and accomplishments.',
+    description: 'Helper text under the leaderboard opt-out switch in Account Settings.',
+  },
 });
 
 export default messages;

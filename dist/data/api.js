@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.updateBadgeNotificationsPreference = exports.markBadgeNotificationsSeen = exports.fetchUserBadges = exports.fetchGammaProfileData = exports.fetchBadgeNotificationsPreference = exports.fetchBadgeNotifications = exports.BADGE_NOTIFICATIONS_PREFERENCE_KEY = void 0;
+exports.updateLeaderboardOptOut = exports.updateBadgeNotificationsPreference = exports.markBadgeNotificationsSeen = exports.fetchUserBadges = exports.fetchLeaderboardOptOut = exports.fetchGammaProfileData = exports.fetchBadgeNotificationsPreference = exports.fetchBadgeNotifications = exports.BADGE_NOTIFICATIONS_PREFERENCE_KEY = void 0;
 var _auth = require("@edx/frontend-platform/auth");
 var _urls = require("./urls");
 /**
@@ -106,5 +106,39 @@ const updateBadgeNotificationsPreference = async (username, enabled) => {
     }
   });
 };
+
+/**
+ * Reads whether the signed-in learner has opted out of leaderboard ranking.
+ *
+ * Backed by the dashboard endpoint (Gamma is the source of truth), not a user
+ * preference. Returns false (not opted out) when unset.
+ *
+ * @async
+ * @returns {Promise<boolean>}
+ */
 exports.updateBadgeNotificationsPreference = updateBadgeNotificationsPreference;
+const fetchLeaderboardOptOut = async () => {
+  const {
+    data
+  } = await (0, _auth.getAuthenticatedHttpClient)().get((0, _urls.getLeaderboardOptOutUrl)());
+  return Boolean(data?.opted_out);
+};
+
+/**
+ * Persists the signed-in learner's leaderboard opt-out choice.
+ *
+ * @async
+ * @param {boolean} optedOut - Whether to hide the learner from every leaderboard.
+ * @returns {Promise<boolean>} The stored value echoed back by the server.
+ */
+exports.fetchLeaderboardOptOut = fetchLeaderboardOptOut;
+const updateLeaderboardOptOut = async optedOut => {
+  const {
+    data
+  } = await (0, _auth.getAuthenticatedHttpClient)().post((0, _urls.getLeaderboardOptOutUrl)(), {
+    opted_out: optedOut
+  });
+  return Boolean(data?.opted_out);
+};
+exports.updateLeaderboardOptOut = updateLeaderboardOptOut;
 //# sourceMappingURL=api.js.map

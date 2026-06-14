@@ -4,9 +4,11 @@ import {
   fetchBadgeNotifications,
   fetchBadgeNotificationsPreference,
   fetchGammaProfileData,
+  fetchLeaderboardOptOut,
   fetchUserBadges,
   markBadgeNotificationsSeen,
   updateBadgeNotificationsPreference,
+  updateLeaderboardOptOut,
 } from './api';
 
 /**
@@ -91,6 +93,35 @@ export const useUpdateBadgeNotificationsPreference = (username) => {
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['badgeNotificationsPreference', username] });
+    },
+  });
+};
+
+export const useLeaderboardOptOut = (username) => (
+  useQuery({
+    queryKey: ['leaderboardOptOut', username],
+    queryFn: fetchLeaderboardOptOut,
+    enabled: Boolean(username),
+    retry: retryFn,
+  })
+);
+
+export const useUpdateLeaderboardOptOut = (username) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (optedOut) => updateLeaderboardOptOut(optedOut),
+    // Optimistic flip so the switch feels instant; reconcile with the server after.
+    onMutate: async (optedOut) => {
+      await queryClient.cancelQueries({ queryKey: ['leaderboardOptOut', username] });
+      const previous = queryClient.getQueryData(['leaderboardOptOut', username]);
+      queryClient.setQueryData(['leaderboardOptOut', username], optedOut);
+      return { previous };
+    },
+    onError: (_error, _optedOut, context) => {
+      queryClient.setQueryData(['leaderboardOptOut', username], context?.previous);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['leaderboardOptOut', username] });
     },
   });
 };

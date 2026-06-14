@@ -3,6 +3,7 @@ import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import {
   getBadgeNotificationsUrl,
   getGammaProfileUrl,
+  getLeaderboardOptOutUrl,
   getUserBadgesUrl,
   getUserPreferencesUrl,
 } from './urls';
@@ -88,4 +89,33 @@ export const updateBadgeNotificationsPreference = async (username, enabled) => {
     { [BADGE_NOTIFICATIONS_PREFERENCE_KEY]: enabled ? 'true' : 'false' },
     { headers: { 'Content-Type': 'application/merge-patch+json' } },
   );
+};
+
+/**
+ * Reads whether the signed-in learner has opted out of leaderboard ranking.
+ *
+ * Backed by the dashboard endpoint (Gamma is the source of truth), not a user
+ * preference. Returns false (not opted out) when unset.
+ *
+ * @async
+ * @returns {Promise<boolean>}
+ */
+export const fetchLeaderboardOptOut = async () => {
+  const { data } = await getAuthenticatedHttpClient().get(getLeaderboardOptOutUrl());
+  return Boolean(data?.opted_out);
+};
+
+/**
+ * Persists the signed-in learner's leaderboard opt-out choice.
+ *
+ * @async
+ * @param {boolean} optedOut - Whether to hide the learner from every leaderboard.
+ * @returns {Promise<boolean>} The stored value echoed back by the server.
+ */
+export const updateLeaderboardOptOut = async (optedOut) => {
+  const { data } = await getAuthenticatedHttpClient().post(
+    getLeaderboardOptOutUrl(),
+    { opted_out: optedOut },
+  );
+  return Boolean(data?.opted_out);
 };

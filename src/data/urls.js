@@ -8,6 +8,8 @@ export const getBadgeLeaderboardUrl = (slug) => `${getConfig().LMS_BASE_URL}/gam
 
 export const getBadgeNotificationsUrl = () => `${getConfig().LMS_BASE_URL}/gamma_dashboard/api/v0/badge-notifications/`;
 
+export const getLeaderboardOptOutUrl = () => `${getConfig().LMS_BASE_URL}/gamma_dashboard/api/v0/leaderboard-opt-out/`;
+
 export const getUserPreferencesUrl = (username) => `${getConfig().LMS_BASE_URL}/api/user/v1/preferences/${username}`;
 
 export const getGammaDashboardUrl = () => `${getConfig().LMS_BASE_URL}/gamma_dashboard/dashboard/`;

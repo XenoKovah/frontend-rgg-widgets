@@ -30,6 +30,13 @@ function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e
   const {
     mutate: updatePreference
   } = (0, _hooks.useUpdateBadgeNotificationsPreference)(username);
+  const {
+    data: optedOut,
+    isLoading: isOptOutLoading
+  } = (0, _hooks.useLeaderboardOptOut)(username);
+  const {
+    mutate: updateOptOut
+  } = (0, _hooks.useUpdateLeaderboardOptOut)(username);
   if (!username) {
     return null;
   }
@@ -54,6 +61,14 @@ function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e
       helperText: intl.formatMessage(_messages.default['rgg.badge.notifications.toggle.description']),
       "data-testid": "rgg-badge-notifications-toggle",
       children: intl.formatMessage(_messages.default['rgg.badge.notifications.toggle.label'])
+    }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_paragon.Form.Switch, {
+      className: "mt-3",
+      checked: Boolean(optedOut),
+      disabled: isOptOutLoading,
+      onChange: event => updateOptOut(event.target.checked),
+      helperText: intl.formatMessage(_messages.default['rgg.leaderboard.optout.toggle.description']),
+      "data-testid": "rgg-leaderboard-optout-toggle",
+      children: intl.formatMessage(_messages.default['rgg.leaderboard.optout.toggle.label'])
     })]
   });
 };

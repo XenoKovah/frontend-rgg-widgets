@@ -39,7 +39,9 @@ const AvatarProgress = () => {
   } = data ?? {};
 
   const currentProgressCap = requiredPoints || maxRequiredPoints;
-  const currentProgressPercentage = (currentPoints / currentProgressCap) * 100;
+  // Clamp at 0: a learner docked a negative-points (penalty) badge can have a total
+  // below zero, which would otherwise render a negative-width progress bar.
+  const currentProgressPercentage = Math.max(0, (currentPoints / currentProgressCap) * 100);
   const performanceUrl = `${getConfig().LMS_BASE_URL}/gamma_dashboard/dashboard/`;
   const performanceLink = (chunks) => <Hyperlink destination={performanceUrl}>{chunks}</Hyperlink>;
 

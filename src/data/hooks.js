@@ -42,9 +42,12 @@ export const useUserBadges = (username) => (
     queryFn: () => fetchUserBadges(username),
     enabled: Boolean(username),
     retry: retryFn,
-    // The API returns badges in award order; show the collection alphabetically.
+    // Show the most valuable badges first: sort by completion points descending,
+    // breaking ties alphabetically by title. (The backend already returns them in
+    // this order; re-sorting here keeps it correct regardless of deploy order.)
     select: (badges) => [...(badges || [])].sort(
-      (a, b) => (a.title || '').localeCompare(b.title || '', undefined, { sensitivity: 'base' }),
+      (a, b) => (b.points || 0) - (a.points || 0)
+        || (a.title || '').localeCompare(b.title || '', undefined, { sensitivity: 'base' }),
     ),
   })
 );

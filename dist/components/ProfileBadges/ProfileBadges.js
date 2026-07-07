@@ -8,6 +8,7 @@ var _i18n = require("@edx/frontend-platform/i18n");
 var _paragon = require("@openedx/paragon");
 var _hooks = require("../../data/hooks");
 var _urls = require("../../data/urls");
+var _sanitizeHtml = require("../../utils/sanitizeHtml");
 var _messages = _interopRequireDefault(require("./messages"));
 require("./index.scss");
 var _jsxRuntime = require("react/jsx-runtime");
@@ -49,27 +50,45 @@ const ProfileBadges = () => {
       children: intl.formatMessage(_messages.default['rgg.profile.badges.heading'])
     }), /*#__PURE__*/(0, _jsxRuntime.jsx)("ul", {
       className: "list-unstyled m-0",
-      children: badges.map(badge => /*#__PURE__*/(0, _jsxRuntime.jsx)("li", {
-        className: "rgg-profile-badge mb-3",
+      children: badges.map(badge => /*#__PURE__*/(0, _jsxRuntime.jsxs)("li", {
+        className: "rgg-profile-badge d-flex align-items-start mb-3",
         "data-testid": "rgg-profile-badge",
-        children: /*#__PURE__*/(0, _jsxRuntime.jsxs)(_paragon.Hyperlink, {
+        children: [badge.image &&
+        /*#__PURE__*/
+        // The image links to the per-badge leaderboard like the title, but is
+        // hidden from assistive tech and the tab order so it is not a duplicate
+        // of the title link to the same destination.
+        (0, _jsxRuntime.jsx)(_paragon.Hyperlink, {
           destination: (0, _urls.getBadgeLeaderboardUrl)(badge.slug),
-          className: "rgg-profile-badge-link d-flex align-items-start text-reset text-decoration-none",
-          children: [badge.image && /*#__PURE__*/(0, _jsxRuntime.jsx)(_paragon.Image, {
-            className: "rgg-profile-badge-image flex-shrink-0 mr-3",
+          className: "rgg-profile-badge-image-link flex-shrink-0 mr-3",
+          tabIndex: -1,
+          "aria-hidden": "true",
+          children: /*#__PURE__*/(0, _jsxRuntime.jsx)(_paragon.Image, {
+            className: "rgg-profile-badge-image",
             src: badge.image,
             alt: badge.title
-          }), /*#__PURE__*/(0, _jsxRuntime.jsxs)("div", {
-            className: "rgg-profile-badge-info",
-            children: [/*#__PURE__*/(0, _jsxRuntime.jsx)("div", {
-              className: "rgg-profile-badge-title font-weight-bold",
-              children: badge.title
-            }), badge.description && /*#__PURE__*/(0, _jsxRuntime.jsx)("div", {
-              className: "rgg-profile-badge-description small text-gray-600",
-              children: badge.description
-            })]
+          })
+        }), /*#__PURE__*/(0, _jsxRuntime.jsxs)("div", {
+          className: "rgg-profile-badge-info",
+          children: [/*#__PURE__*/(0, _jsxRuntime.jsx)(_paragon.Hyperlink, {
+            destination: (0, _urls.getBadgeLeaderboardUrl)(badge.slug),
+            className: "rgg-profile-badge-link rgg-profile-badge-title font-weight-bold text-reset text-decoration-none",
+            children: badge.title
+          }), badge.description &&
+          /*#__PURE__*/
+          // Rendered as sanitized HTML (not plain text) so a description may
+          // link the course name to its class page. Kept OUTSIDE the badge's
+          // leaderboard link above to avoid an invalid nested anchor. See
+          // sanitizeDescriptionHtml.
+          (0, _jsxRuntime.jsx)("div", {
+            className: "rgg-profile-badge-description small text-gray-600"
+            // eslint-disable-next-line react/no-danger
+            ,
+            dangerouslySetInnerHTML: {
+              __html: (0, _sanitizeHtml.sanitizeDescriptionHtml)(badge.description)
+            }
           })]
-        })
+        })]
       }, badge.title))
     })]
   });

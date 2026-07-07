@@ -5,9 +5,10 @@
     object-fit: contain;
   }
 
-  // The icon + name link to the per-badge leaderboard; the link inherits surrounding
-  // text styling (text-reset), so underline the name on hover to signal it is clickable.
-  .rgg-profile-badge-link:hover .rgg-profile-badge-title {
+  // The icon + name link to the per-badge leaderboard; the name link inherits
+  // surrounding text styling (text-reset), so underline it on hover to signal it is
+  // clickable. The name link now IS the .rgg-profile-badge-title element.
+  .rgg-profile-badge-title.rgg-profile-badge-link:hover {
     text-decoration: underline;
   }
 

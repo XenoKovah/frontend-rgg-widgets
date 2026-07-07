@@ -3,6 +3,7 @@ import { Hyperlink, Image } from '@openedx/paragon';
 
 import { useUserBadges } from '../../data/hooks';
 import { getBadgeLeaderboardUrl } from '../../data/urls';
+import { sanitizeDescriptionHtml } from '../../utils/sanitizeHtml';
 import messages from './messages';
 
 import './index.scss';
@@ -45,31 +46,45 @@ const ProfileBadges = () => {
         {badges.map((badge) => (
           <li
             key={badge.title}
-            className="rgg-profile-badge mb-3"
+            className="rgg-profile-badge d-flex align-items-start mb-3"
             data-testid="rgg-profile-badge"
           >
-            <Hyperlink
-              destination={getBadgeLeaderboardUrl(badge.slug)}
-              className="rgg-profile-badge-link d-flex align-items-start text-reset text-decoration-none"
-            >
-              {badge.image && (
+            {badge.image && (
+              // The image links to the per-badge leaderboard like the title, but is
+              // hidden from assistive tech and the tab order so it is not a duplicate
+              // of the title link to the same destination.
+              <Hyperlink
+                destination={getBadgeLeaderboardUrl(badge.slug)}
+                className="rgg-profile-badge-image-link flex-shrink-0 mr-3"
+                tabIndex={-1}
+                aria-hidden="true"
+              >
                 <Image
-                  className="rgg-profile-badge-image flex-shrink-0 mr-3"
+                  className="rgg-profile-badge-image"
                   src={badge.image}
                   alt={badge.title}
                 />
+              </Hyperlink>
+            )}
+            <div className="rgg-profile-badge-info">
+              <Hyperlink
+                destination={getBadgeLeaderboardUrl(badge.slug)}
+                className="rgg-profile-badge-link rgg-profile-badge-title font-weight-bold text-reset text-decoration-none"
+              >
+                {badge.title}
+              </Hyperlink>
+              {badge.description && (
+                // Rendered as sanitized HTML (not plain text) so a description may
+                // link the course name to its class page. Kept OUTSIDE the badge's
+                // leaderboard link above to avoid an invalid nested anchor. See
+                // sanitizeDescriptionHtml.
+                <div
+                  className="rgg-profile-badge-description small text-gray-600"
+                  // eslint-disable-next-line react/no-danger
+                  dangerouslySetInnerHTML={{ __html: sanitizeDescriptionHtml(badge.description) }}
+                />
               )}
-              <div className="rgg-profile-badge-info">
-                <div className="rgg-profile-badge-title font-weight-bold">
-                  {badge.title}
-                </div>
-                {badge.description && (
-                  <div className="rgg-profile-badge-description small text-gray-600">
-                    {badge.description}
-                  </div>
-                )}
-              </div>
-            </Hyperlink>
+            </div>
           </li>
         ))}
       </ul>

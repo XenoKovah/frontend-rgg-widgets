@@ -1,0 +1,31 @@
+// The bordered-box look for the sibling "Earned Accomplishments" widget lives in
+// frontend-app-profile (src/profile/index.scss, keyed on .rgg-profile-badges).
+// This box carries its own copy of it so the level section can ship without a
+// matching change in the Profile MFE -- keep the two in step if that box is
+// restyled. Values match the other profile section cards: 1px border all round,
+// an 8px left accent bar, 8px radius.
+.rgg-profile-level {
+  padding: 15px;
+  border: 1px solid #e5e7eb;
+  border-left: 8px solid #f2f7f8;
+  border-radius: 8px;
+
+  h2 {
+    font-size: 1.125rem;
+    font-weight: 600;
+  }
+
+  .rgg-profile-level-image {
+    width: 6rem;
+    height: 6rem;
+    object-fit: contain;
+  }
+}
+
+// Indigo dark theme (the theme toggle puts .indigo-dark-theme on <body>): the
+// point total uses the .text-gray-600 utility, which the brand's dark CSS does not
+// override (it only covers 500/700/900) and is too dark on the dark page. Same
+// treatment the badge descriptions get next door.
+body.indigo-dark-theme .rgg-profile-level .rgg-profile-level-points {
+  color: #dddfe2 !important;
+}

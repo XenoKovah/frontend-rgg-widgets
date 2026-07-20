@@ -5,6 +5,7 @@ import {
   getGammaProfileUrl,
   getLeaderboardOptOutUrl,
   getUserBadgesUrl,
+  getUserLevelUrl,
   getUserPreferencesUrl,
 } from './urls';
 
@@ -37,6 +38,22 @@ export const fetchGammaProfileData = async (username) => {
  */
 export const fetchUserBadges = async (username) => {
   const { data } = await getAuthenticatedHttpClient().get(getUserBadgesUrl(username));
+  return data;
+};
+
+/**
+ * Fetches the R0x0r level a user has reached, for their profile page.
+ *
+ * `level` is null when the learner has not yet reached the first threshold, and
+ * the whole payload is `{}` when the profile is not visible to the requester.
+ *
+ * @async
+ * @param {string} username - The username of the profile being viewed.
+ * @returns {Promise<{points?: number, level?: {title: string, slug: string,
+ *   image: string, status_points: number}|null}>}
+ */
+export const fetchUserLevel = async (username) => {
+  const { data } = await getAuthenticatedHttpClient().get(getUserLevelUrl(username));
   return data;
 };
 

@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.useUserBadges = exports.useUpdateLeaderboardOptOut = exports.useUpdateBadgeNotificationsPreference = exports.useMarkBadgeNotificationsSeen = exports.useLeaderboardOptOut = exports.useGammaProfileData = exports.useBadgeNotificationsPreference = exports.useBadgeNotifications = exports.retryFn = exports.BADGE_NOTIFICATIONS_POLL_INTERVAL_MS = void 0;
+exports.useUserLevel = exports.useUserBadges = exports.useUpdateLeaderboardOptOut = exports.useUpdateBadgeNotificationsPreference = exports.useMarkBadgeNotificationsSeen = exports.useLeaderboardOptOut = exports.useGammaProfileData = exports.useBadgeNotificationsPreference = exports.useBadgeNotifications = exports.retryFn = exports.BADGE_NOTIFICATIONS_POLL_INTERVAL_MS = void 0;
 var _reactQuery = require("@tanstack/react-query");
 var _api = require("./api");
 /**
@@ -41,6 +41,16 @@ const useUserBadges = username => (0, _reactQuery.useQuery)({
   }))
 });
 exports.useUserBadges = useUserBadges;
+const useUserLevel = username => (0, _reactQuery.useQuery)({
+  // Keyed by username for the same reason as useUserBadges: this is the VIEWED
+  // profile's level, not the signed-in user's, so the cache must not bleed
+  // across profiles.
+  queryKey: ['userLevel', username],
+  queryFn: () => (0, _api.fetchUserLevel)(username),
+  enabled: Boolean(username),
+  retry: retryFn
+});
+exports.useUserLevel = useUserLevel;
 const useBadgeNotifications = enabled => (0, _reactQuery.useQuery)({
   queryKey: ['badgeNotifications'],
   queryFn: _api.fetchBadgeNotifications,

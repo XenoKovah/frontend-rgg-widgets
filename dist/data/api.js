@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.updateLeaderboardOptOut = exports.updateBadgeNotificationsPreference = exports.markBadgeNotificationsSeen = exports.fetchUserBadges = exports.fetchLeaderboardOptOut = exports.fetchGammaProfileData = exports.fetchBadgeNotificationsPreference = exports.fetchBadgeNotifications = exports.BADGE_NOTIFICATIONS_PREFERENCE_KEY = void 0;
+exports.updateLeaderboardOptOut = exports.updateBadgeNotificationsPreference = exports.markBadgeNotificationsSeen = exports.fetchUserLevel = exports.fetchUserBadges = exports.fetchLeaderboardOptOut = exports.fetchGammaProfileData = exports.fetchBadgeNotificationsPreference = exports.fetchBadgeNotifications = exports.BADGE_NOTIFICATIONS_PREFERENCE_KEY = void 0;
 var _auth = require("@edx/frontend-platform/auth");
 var _urls = require("./urls");
 /**
@@ -43,13 +43,32 @@ const fetchUserBadges = async username => {
 };
 
 /**
+ * Fetches the R0x0r level a user has reached, for their profile page.
+ *
+ * `level` is null when the learner has not yet reached the first threshold, and
+ * the whole payload is `{}` when the profile is not visible to the requester.
+ *
+ * @async
+ * @param {string} username - The username of the profile being viewed.
+ * @returns {Promise<{points?: number, level?: {title: string, slug: string,
+ *   image: string, status_points: number}|null}>}
+ */
+exports.fetchUserBadges = fetchUserBadges;
+const fetchUserLevel = async username => {
+  const {
+    data
+  } = await (0, _auth.getAuthenticatedHttpClient)().get((0, _urls.getUserLevelUrl)(username));
+  return data;
+};
+
+/**
  * Fetches the current user's pending "badge earned" notifications.
  *
  * @async
  * @returns {Promise<{enabled: boolean, notifications: Array<{uuid: string, slug: string,
  *   title: string, description: string, image: string, completed_at: string}>}>}
  */
-exports.fetchUserBadges = fetchUserBadges;
+exports.fetchUserLevel = fetchUserLevel;
 const fetchBadgeNotifications = async () => {
   const {
     data

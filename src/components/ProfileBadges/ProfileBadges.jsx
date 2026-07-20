@@ -4,23 +4,10 @@ import { Hyperlink, Image } from '@openedx/paragon';
 import { useUserBadges } from '../../data/hooks';
 import { getBadgeLeaderboardUrl } from '../../data/urls';
 import { sanitizeDescriptionHtml } from '../../utils/sanitizeHtml';
+import { getViewedUsername } from '../../utils/viewedProfile';
 import messages from './messages';
 
 import './index.scss';
-
-/**
- * Extract the viewed user's username from the profile URL (`/profile/u/<username>`).
- *
- * Read from the path rather than react-router's `useParams` so the widget does not
- * depend on sharing a react-router context with the host MFE: it is bundled
- * separately and may not see the MFE's Router provider.
- *
- * @returns {string} the viewed username, or '' if it can't be determined.
- */
-const getViewedUsername = () => {
-  const match = window.location.pathname.match(/\/u\/([^/?#]+)/);
-  return match ? decodeURIComponent(match[1]) : '';
-};
 
 /**
  * Renders the list of badges the viewed user has earned, in the Profile page's

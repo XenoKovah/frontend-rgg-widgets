@@ -9,32 +9,19 @@ var _paragon = require("@openedx/paragon");
 var _hooks = require("../../data/hooks");
 var _urls = require("../../data/urls");
 var _sanitizeHtml = require("../../utils/sanitizeHtml");
+var _viewedProfile = require("../../utils/viewedProfile");
 var _messages = _interopRequireDefault(require("./messages"));
 require("./index.scss");
 var _jsxRuntime = require("react/jsx-runtime");
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 /**
- * Extract the viewed user's username from the profile URL (`/profile/u/<username>`).
- *
- * Read from the path rather than react-router's `useParams` so the widget does not
- * depend on sharing a react-router context with the host MFE: it is bundled
- * separately and may not see the MFE's Router provider.
- *
- * @returns {string} the viewed username, or '' if it can't be determined.
- */const getViewedUsername = () => {
-  const match = window.location.pathname.match(/\/u\/([^/?#]+)/);
-  return match ? decodeURIComponent(match[1]) : '';
-};
-
-/**
  * Renders the list of badges the viewed user has earned, in the Profile page's
  * left column (under "Social Links"). The backend returns only completed badges
  * and already enforces profile visibility, so this widget simply renders nothing
  * when there is nothing to show.
- */
-const ProfileBadges = () => {
+ */const ProfileBadges = () => {
   const intl = (0, _i18n.useIntl)();
-  const username = getViewedUsername();
+  const username = (0, _viewedProfile.getViewedUsername)();
   const {
     data: badges = [],
     isLoading,

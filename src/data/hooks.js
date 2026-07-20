@@ -6,6 +6,7 @@ import {
   fetchGammaProfileData,
   fetchLeaderboardOptOut,
   fetchUserBadges,
+  fetchUserLevel,
   markBadgeNotificationsSeen,
   updateBadgeNotificationsPreference,
   updateLeaderboardOptOut,
@@ -49,6 +50,18 @@ export const useUserBadges = (username) => (
       (a, b) => (b.points || 0) - (a.points || 0)
         || (a.title || '').localeCompare(b.title || '', undefined, { sensitivity: 'base' }),
     ),
+  })
+);
+
+export const useUserLevel = (username) => (
+  useQuery({
+    // Keyed by username for the same reason as useUserBadges: this is the VIEWED
+    // profile's level, not the signed-in user's, so the cache must not bleed
+    // across profiles.
+    queryKey: ['userLevel', username],
+    queryFn: () => fetchUserLevel(username),
+    enabled: Boolean(username),
+    retry: retryFn,
   })
 );
 
